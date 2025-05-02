@@ -6,12 +6,6 @@ UGC quiz website
 
 ```mermaid
 erDiagram
-    %% Style Definitions: Assigning colors based on entity role
-    classDef core fill:#D1E7DD,stroke:#333,stroke-width:1px,color:#000;
-    classDef junction fill:#FFF3CD,stroke:#333,stroke-width:1px,color:#000;
-    classDef activity fill:#DAE8FC,stroke:#333,stroke-width:1px,color:#000;
-    classDef report fill:#F8D7DA,stroke:#B85C5C,stroke-width:1px,color:#000;
-
     %% Entity Definitions
     users {
         UUID user_id PK "gen_random_uuid()"
@@ -107,12 +101,6 @@ erDiagram
         UUID resolved_by FK "ON DELETE SET NULL"
         TIMESTAMP resolved_at
     }
-
-    %% Assign classes to entities
-    class users,quizzes,questions,answers,tags core
-    class quiz_questions,quiz_tags junction
-    class quiz_attempts,user_answers activity
-    class reports report
 
     %% Relationship Definitions
     users ||--o{ quizzes : "creates"
