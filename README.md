@@ -136,5 +136,4 @@ erDiagram
     tags ||--o{ quiz_tags : "is_applied_via"
 
     quiz_attempts ||--o{ user_answers : "includes"
-
 ```
