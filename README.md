@@ -6,11 +6,11 @@ UGC quiz website
 
 ```mermaid
 erDiagram
-    %% Define styles for different entity types
-    classDef core fill:#D1E7DD,stroke:#333,stroke-width:1px,color:#000;  // Light green for core concepts
-    classDef junction fill:#FFF3CD,stroke:#333,stroke-width:1px,color:#000; // Light yellow for linking tables
-    classDef activity fill:#DAE8FC,stroke:#333,stroke-width:1px,color:#000; // Light blue for user activity/attempts
-    classDef report fill:#F8D7DA,stroke:#B85C5C,stroke-width:1px,color:#000; // Light red/pink for reports
+    %% Style Definitions: Assigning colors based on entity role
+    classDef core fill:#D1E7DD,stroke:#333,stroke-width:1px,color:#000;
+    classDef junction fill:#FFF3CD,stroke:#333,stroke-width:1px,color:#000;
+    classDef activity fill:#DAE8FC,stroke:#333,stroke-width:1px,color:#000;
+    classDef report fill:#F8D7DA,stroke:#B85C5C,stroke-width:1px,color:#000;
 
     %% Entity Definitions
     users {
