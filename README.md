@@ -89,7 +89,7 @@ erDiagram
         UUID user_answer_id PK "gen_random_uuid()"
         UUID attempt_id FK "ON DELETE CASCADE"
         UUID quiz_question_id FK "ON DELETE CASCADE"
-        UUID selected_answer_id FK "ON DELETE SET NULL, For multiple choice"
+        UUID selected_answer_id FK "ON DELETE SET NULL"
         TEXT manual_input_text "For fill_in_blank"
         TEXT arranged_order_ids "JSON/Array for ordering questions"
         BOOLEAN is_correct
@@ -109,10 +109,10 @@ erDiagram
     }
 
     %% Assign classes to entities
-    class users,quizzes,questions,answers,tags core;
-    class quiz_questions,quiz_tags junction;
-    class quiz_attempts,user_answers activity;
-    class reports report;
+    class users,quizzes,questions,answers,tags core
+    class quiz_questions,quiz_tags junction
+    class quiz_attempts,user_answers activity
+    class reports report
 
     %% Relationship Definitions
     users ||--o{ quizzes : "creates"
@@ -136,4 +136,5 @@ erDiagram
     tags ||--o{ quiz_tags : "is_applied_via"
 
     quiz_attempts ||--o{ user_answers : "includes"
+
 ```
