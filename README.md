@@ -6,6 +6,13 @@ UGC quiz website
 
 ```mermaid
 erDiagram
+    %% Define styles for different entity types
+    classDef core fill:#D1E7DD,stroke:#333,stroke-width:1px,color:#000;  // Light green for core concepts
+    classDef junction fill:#FFF3CD,stroke:#333,stroke-width:1px,color:#000; // Light yellow for linking tables
+    classDef activity fill:#DAE8FC,stroke:#333,stroke-width:1px,color:#000; // Light blue for user activity/attempts
+    classDef report fill:#F8D7DA,stroke:#B85C5C,stroke-width:1px,color:#000; // Light red/pink for reports
+
+    %% Entity Definitions
     users {
         UUID user_id PK "gen_random_uuid()"
         VARCHAR username UK "UNIQUE"
@@ -101,6 +108,13 @@ erDiagram
         TIMESTAMP resolved_at
     }
 
+    %% Assign classes to entities
+    class users,quizzes,questions,answers,tags core;
+    class quiz_questions,quiz_tags junction;
+    class quiz_attempts,user_answers activity;
+    class reports report;
+
+    %% Relationship Definitions
     users ||--o{ quizzes : "creates"
     users ||--o{ quiz_attempts : "makes"
     users ||--o{ reports : "submits_report"
