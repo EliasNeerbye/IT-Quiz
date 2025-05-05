@@ -128,6 +128,15 @@ const UserAvatar = styled.div`
   font-weight: 600;
 `;
 
+const LoadingSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #3b82f6;
+`;
+
 const AdminPage = () => {
   const { user, isAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -136,18 +145,23 @@ const AdminPage = () => {
   const [users, setUsers] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
   
-  // Near the top of the AdminPage component
+  // First, check if user is admin
   useEffect(() => {
-    // Only redirect if we're sure auth check is complete and user is not admin
-    if (!loading && !isAdmin) {
-      toast.error('You do not have access to this page');
-      navigate('/dashboard');
-      return;
+    if (user) {
+      setAuthChecked(true);
+      if (!isAdmin) {
+        toast.error('You do not have access to this page');
+        navigate('/dashboard');
+      }
     }
-    
-    // Skip fetching data if still loading auth status
-    if (loading) return;
+  }, [user, isAdmin, navigate]);
+  
+  // Then, fetch data based on active tab
+  useEffect(() => {
+    // Only fetch if user is authenticated and is admin
+    if (!authChecked || !isAdmin) return;
     
     const fetchData = async () => {
       try {
@@ -155,12 +169,17 @@ const AdminPage = () => {
         
         if (activeTab === 'users') {
           const res = await adminService.getUsers();
-          setUsers(res.data.users);
+          if (res.data && res.data.users) {
+            setUsers(res.data.users);
+          }
         } else if (activeTab === 'quizzes') {
           const res = await quizService.getQuizzes();
-          setQuizzes(res.data.quizzes);
+          if (res.data && res.data.quizzes) {
+            setQuizzes(res.data.quizzes);
+          }
         }
       } catch (error) {
+        console.error('Error fetching data:', error);
         toast.error('Failed to load data');
       } finally {
         setLoading(false);
@@ -168,7 +187,7 @@ const AdminPage = () => {
     };
     
     fetchData();
-  }, [isAdmin, navigate, activeTab, loading]);
+  }, [activeTab, isAdmin, authChecked]);
   
   const handleRoleToggle = async (userId, currentRole) => {
     try {
@@ -187,7 +206,7 @@ const AdminPage = () => {
   };
   
   const handleDeleteUser = async (userId) => {
-    if (userId === user.id) {
+    if (userId === user._id) {
       toast.error('You cannot delete your own account');
       return;
     }
@@ -229,6 +248,14 @@ const AdminPage = () => {
     return new Date(dateString).toLocaleDateString();
   };
   
+  if (!authChecked) {
+    return <LoadingSpinner>Checking permissions...</LoadingSpinner>;
+  }
+  
+  if (!isAdmin) {
+    return null; // Will redirect in useEffect
+  }
+  
   return (
     <AdminContainer>
       <AdminHeader>
@@ -252,7 +279,7 @@ const AdminPage = () => {
       
       <ContentContainer>
         {loading ? (
-          <p>Loading data...</p>
+          <LoadingSpinner>Loading data...</LoadingSpinner>
         ) : (
           <>
             {activeTab === 'users' && (
@@ -268,60 +295,68 @@ const AdminPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map(userData => (
-                      <TableRow key={userData._id}>
-                        <TableCell>
-                          <UserInfo>
-                            <UserAvatar>
-                              {getInitials(userData.username)}
-                            </UserAvatar>
-                            {userData.username}
-                          </UserInfo>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FaEnvelope className="text-gray-400" />
-                            {userData.email}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <RoleBadge role={userData.role}>
-                            {userData.role === 'admin' ? (
-                              <>
-                                <FaUserShield /> Admin
-                              </>
-                            ) : (
-                              <>
-                                <FaUser /> User
-                              </>
-                            )}
-                          </RoleBadge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FaCalendarAlt className="text-gray-400" />
-                            {formatDate(userData.createdAt)}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <ActionButtons>
-                            <Button 
-                              className="btn-secondary"
-                              onClick={() => handleRoleToggle(userData._id, userData.role)}
-                            >
-                              {userData.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
-                            </Button>
-                            <Button 
-                              className="btn-danger"
-                              onClick={() => handleDeleteUser(userData._id)}
-                              disabled={userData._id === user.id}
-                            >
-                              <FaTrash />
-                            </Button>
-                          </ActionButtons>
+                    {users.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan="5" style={{ textAlign: 'center' }}>
+                          No users found
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      users.map(userData => (
+                        <TableRow key={userData._id}>
+                          <TableCell>
+                            <UserInfo>
+                              <UserAvatar>
+                                {getInitials(userData.username)}
+                              </UserAvatar>
+                              {userData.username}
+                            </UserInfo>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <FaEnvelope className="text-gray-400" />
+                              {userData.email}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <RoleBadge role={userData.role}>
+                              {userData.role === 'admin' ? (
+                                <>
+                                  <FaUserShield /> Admin
+                                </>
+                              ) : (
+                                <>
+                                  <FaUser /> User
+                                </>
+                              )}
+                            </RoleBadge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <FaCalendarAlt className="text-gray-400" />
+                              {formatDate(userData.createdAt)}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <ActionButtons>
+                              <Button 
+                                className="btn-secondary"
+                                onClick={() => handleRoleToggle(userData._id, userData.role)}
+                              >
+                                {userData.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                              </Button>
+                              <Button 
+                                className="btn-danger"
+                                onClick={() => handleDeleteUser(userData._id)}
+                                disabled={userData._id === user._id}
+                              >
+                                <FaTrash />
+                              </Button>
+                            </ActionButtons>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </tbody>
                 </Table>
               </TableContainer>
@@ -340,30 +375,38 @@ const AdminPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {quizzes.map(quiz => (
-                      <TableRow key={quiz._id}>
-                        <TableCell>{quiz.title}</TableCell>
-                        <TableCell>{quiz.creator?.username || 'Unknown'}</TableCell>
-                        <TableCell>{formatDate(quiz.createdAt)}</TableCell>
-                        <TableCell>{quiz.questions?.length || 0}</TableCell>
-                        <TableCell>
-                          <ActionButtons>
-                            <Button 
-                              className="btn-secondary"
-                              onClick={() => navigate(`/quiz/${quiz._id}`)}
-                            >
-                              <FaEye />
-                            </Button>
-                            <Button 
-                              className="btn-danger"
-                              onClick={() => handleDeleteQuiz(quiz._id)}
-                            >
-                              <FaTrash />
-                            </Button>
-                          </ActionButtons>
+                    {quizzes.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan="5" style={{ textAlign: 'center' }}>
+                          No quizzes found
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      quizzes.map(quiz => (
+                        <TableRow key={quiz._id}>
+                          <TableCell>{quiz.title}</TableCell>
+                          <TableCell>{quiz.creator?.username || 'Unknown'}</TableCell>
+                          <TableCell>{formatDate(quiz.createdAt)}</TableCell>
+                          <TableCell>{quiz.questions?.length || 0}</TableCell>
+                          <TableCell>
+                            <ActionButtons>
+                              <Button 
+                                className="btn-secondary"
+                                onClick={() => navigate(`/quiz/${quiz._id}`)}
+                              >
+                                <FaEye />
+                              </Button>
+                              <Button 
+                                className="btn-danger"
+                                onClick={() => handleDeleteQuiz(quiz._id)}
+                              >
+                                <FaTrash />
+                              </Button>
+                            </ActionButtons>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </tbody>
                 </Table>
               </TableContainer>
