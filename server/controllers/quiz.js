@@ -2,6 +2,7 @@ const Quiz = require('../models/Quiz');
 const Question = require('../models/Question');
 const Settings = require('../models/Settings');
 const QuizAttempt = require('../models/Quiz_Attempt');
+const Category = require('../models/Category');
 
 const createQuiz = async (req, res) => {
     try {
@@ -157,6 +158,7 @@ const getCategories = async (req, res) => {
         const categories = await Category.find();
         res.json({ categories });
     } catch (error) {
+        console.error('Error fetching categories:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };

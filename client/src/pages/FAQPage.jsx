@@ -35,16 +35,16 @@ const CategoryTabs = styled.div`
 
 const CategoryTab = styled.button`
   padding: 0.5rem 1rem;
-  background-color: ${props => props.active ? '#3b82f6' : '#f8fafc'};
-  color: ${props => props.active ? 'white' : '#64748b'};
-  border: 1px solid ${props => props.active ? '#3b82f6' : '#e5e7eb'};
+  background-color: ${props => props.$active ? '#3b82f6' : '#f8fafc'};
+  color: ${props => props.$active ? 'white' : '#64748b'};
+  border: 1px solid ${props => props.$active ? '#3b82f6' : '#e5e7eb'};
   border-radius: 4px;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
   
   &:hover {
-    background-color: ${props => props.active ? '#2563eb' : '#f1f5f9'};
+    background-color: ${props => props.$active ? '#2563eb' : '#f1f5f9'};
   }
 `;
 

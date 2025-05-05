@@ -31,9 +31,9 @@ const Tab = styled.button`
   background: none;
   border: none;
   font-size: 1rem;
-  font-weight: ${props => props.active ? '600' : '400'};
-  color: ${props => props.active ? '#3b82f6' : '#64748b'};
-  border-bottom: ${props => props.active ? '2px solid #3b82f6' : '2px solid transparent'};
+  font-weight: ${props => props.$active ? '600' : '400'};
+  color: ${props => props.$active ? '#3b82f6' : '#64748b'};
+  border-bottom: ${props => props.$active ? '2px solid #3b82f6' : '2px solid transparent'};
   cursor: pointer;
   transition: all 0.3s ease;
   
@@ -127,13 +127,13 @@ const DashboardPage = () => {
       
       <TabsContainer>
         <Tab 
-          active={activeTab === 'myQuizzes'} 
+          $active={activeTab === 'myQuizzes'} 
           onClick={() => setActiveTab('myQuizzes')}
         >
           My Quizzes
         </Tab>
         <Tab 
-          active={activeTab === 'attempts'} 
+          $active={activeTab === 'attempts'} 
           onClick={() => setActiveTab('attempts')}
         >
           My Attempts

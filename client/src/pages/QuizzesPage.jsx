@@ -111,14 +111,14 @@ const Pagination = styled.div`
 
 const PageButton = styled.button`
   padding: 0.5rem 1rem;
-  border: 1px solid ${props => props.active ? '#3b82f6' : '#e5e7eb'};
-  background-color: ${props => props.active ? '#3b82f6' : 'white'};
-  color: ${props => props.active ? 'white' : '#1e293b'};
+  border: 1px solid ${props => props.$active ? '#3b82f6' : '#e5e7eb'};
+  background-color: ${props => props.$active ? '#3b82f6' : 'white'};
+  color: ${props => props.$active ? 'white' : '#1e293b'};
   border-radius: 4px;
   cursor: pointer;
   
   &:hover {
-    background-color: ${props => props.active ? '#2563eb' : '#f9fafb'};
+    background-color: ${props => props.$active ? '#2563eb' : '#f9fafb'};
   }
   
   &:disabled {

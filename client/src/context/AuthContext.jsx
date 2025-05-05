@@ -13,9 +13,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
+        setLoading(true);
         const res = await authService.getMe();
+        console.log('Auth check response:', res.data);
         setUser(res.data.user);
       } catch (err) {
+        console.error('Auth check error:', err);
         setUser(null);
       } finally {
         setLoading(false);
@@ -47,6 +50,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await authService.login(credentials);
+      console.log('Login response:', res.data);
       setUser(res.data.user);
       toast.success('Logged in successfully!');
       return true;

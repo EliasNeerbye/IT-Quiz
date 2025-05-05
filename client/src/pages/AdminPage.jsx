@@ -44,9 +44,9 @@ const Tab = styled.button`
   background: none;
   border: none;
   font-size: 1rem;
-  font-weight: ${props => props.active ? '600' : '400'};
-  color: ${props => props.active ? '#3b82f6' : '#64748b'};
-  border-bottom: ${props => props.active ? '2px solid #3b82f6' : '2px solid transparent'};
+  font-weight: ${props => props.$active ? '600' : '400'};
+  color: ${props => props.$active ? '#3b82f6' : '#64748b'};
+  border-bottom: ${props => props.$active ? '2px solid #3b82f6' : '2px solid transparent'};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -137,13 +137,17 @@ const AdminPage = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   
+  // Near the top of the AdminPage component
   useEffect(() => {
-    // Redirect if not admin
-    if (!isAdmin) {
+    // Only redirect if we're sure auth check is complete and user is not admin
+    if (!loading && !isAdmin) {
       toast.error('You do not have access to this page');
       navigate('/dashboard');
       return;
     }
+    
+    // Skip fetching data if still loading auth status
+    if (loading) return;
     
     const fetchData = async () => {
       try {
@@ -164,7 +168,7 @@ const AdminPage = () => {
     };
     
     fetchData();
-  }, [isAdmin, navigate, activeTab]);
+  }, [isAdmin, navigate, activeTab, loading]);
   
   const handleRoleToggle = async (userId, currentRole) => {
     try {
@@ -233,13 +237,13 @@ const AdminPage = () => {
       
       <TabsContainer>
         <Tab 
-          active={activeTab === 'users'} 
+          $active={activeTab === 'users'} 
           onClick={() => setActiveTab('users')}
         >
           <FaUsers /> Users
         </Tab>
         <Tab 
-          active={activeTab === 'quizzes'} 
+          $active={activeTab === 'quizzes'} 
           onClick={() => setActiveTab('quizzes')}
         >
           <FaGamepad /> Quizzes
