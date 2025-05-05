@@ -12,6 +12,8 @@ const { Server } = require('socket.io');
 
 const authRoutes = require('./routes/auth');
 const quizRoutes = require('./routes/quiz');
+const adminRoutes = require('./routes/admin');
+const faqRoutes = require('./routes/faq');
 
 const app = express();
 const httpServer = createServer(app);
@@ -51,6 +53,8 @@ app.use(session({
 // Register routes
 app.use('/api/auth', authRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/faq', faqRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

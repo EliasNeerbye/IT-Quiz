@@ -117,4 +117,58 @@ const deleteQuiz = async (req, res) => {
     }
 };
 
-module.exports = { createQuiz, getQuiz, submitQuizAttempt, deleteQuiz };
+const getQuizzes = async (req, res) => {
+    try {
+        const { category, creator, search } = req.query;
+        let query = {};
+        
+        // Filter by category if provided
+        if (category) {
+            query.category = category;
+        }
+        
+        // Filter by creator if provided
+        if (creator) {
+            query.creator = creator;
+        }
+        
+        // Search by title or description if provided
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        const quizzes = await Quiz.find(query)
+            .populate('creator', 'username')
+            .populate('category', 'name')
+            .populate('settings')
+            .sort({ createdAt: -1 });
+        
+        res.json({ quizzes });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const getCategories = async (req, res) => {
+    try {
+        const categories = await Category.find();
+        res.json({ categories });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const createCategory = async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        const category = await Category.create({ name, description });
+        res.status(201).json({ category });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+module.exports = { createQuiz, getQuiz, submitQuizAttempt, deleteQuiz, getQuizzes, getCategories, createCategory };
