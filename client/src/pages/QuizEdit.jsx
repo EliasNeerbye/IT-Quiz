@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getQuizById, updateQuiz, publishQuiz, addQuestion, removeQuestion } from '../services/quiz';
+import { getQuizById, updateQuiz, publishQuiz, addQuestion, removeQuestion, getCategories } from '../services/quiz';
 import Button from '../components/common/Button';
 import QuestionForm from '../components/quiz/QuestionForm';
+import CategorySelector from '../components/common/CategorySelector';
 import Modal from '../components/common/Modal';
 import { FaPlus, FaEdit, FaTrash, FaCheckCircle, FaArrowLeft, FaImage, FaTimes, FaCog } from 'react-icons/fa';
 
@@ -16,38 +17,56 @@ const QuizEdit = () => {
   const [error, setError] = useState(null);
   const [showQuestionForm, setShowQuestionForm] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState(null);
   const [settingsForm, setSettingsForm] = useState({
     private: false,
     multiplayer: true,
     default_time_limit: 60
   });
-  
-  // Fetch quiz data
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  // Fetch quiz data and categories
   useEffect(() => {
-    const fetchQuiz = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await getQuizById(id);
-        setQuiz(response.quiz);
+        
+        // Fetch quiz and categories in parallel
+        const [quizResponse, categoriesResponse] = await Promise.all([
+          getQuizById(id),
+          getCategories()
+        ]);
+        
+        const quiz = quizResponse.quiz;
+        setQuiz(quiz);
         
         // Initialize settings form if quiz has settings
-        if (response.quiz.settings) {
+        if (quiz.settings) {
           setSettingsForm({
-            private: response.quiz.settings.private || false,
-            multiplayer: response.quiz.settings.multiplayer || true,
-            default_time_limit: response.quiz.settings.default_time_limit || 60
+            private: quiz.settings.private || false,
+            multiplayer: quiz.settings.multiplayer || true,
+            default_time_limit: quiz.settings.default_time_limit || 60
           });
         }
+        
+        // Set available categories
+        setCategories(categoriesResponse.categories || []);
+        
+        // Set initially selected categories
+        if (quiz.category && quiz.category.length > 0) {
+          // Extract just the IDs
+          const categoryIds = quiz.category.map(cat => cat._id);
+          setSelectedCategories(categoryIds);
+        }
       } catch (err) {
-        console.error('Failed to fetch quiz:', err);
-        setError(err.response?.data?.error || 'Failed to load quiz. Please try again later.');
+        console.error('Failed to fetch data:', err);
+        setError(err.response?.data?.error || 'Failed to load quiz data. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
     
-    fetchQuiz();
+    fetchData();
   }, [id]);
   
   // Handle submitting a new question
@@ -132,22 +151,40 @@ const QuizEdit = () => {
   // Save settings
   const handleSaveSettings = async () => {
     try {
-      await updateQuiz(id, { settings: settingsForm });
+      // Update quiz with new settings and categories
+      const updateData = {
+        settings: settingsForm,
+        categoryIds: selectedCategories
+      };
       
-      // Update quiz with new settings
-      setQuiz({
+      await updateQuiz(id, updateData);
+      
+      // Update quiz object in state
+      const updatedQuiz = {
         ...quiz,
         settings: {
           ...quiz.settings,
           ...settingsForm
         }
-      });
+      };
+      
+      // Also update the categories if they were changed
+      if (categories.length > 0) {
+        // Convert category IDs to full category objects
+        const fullCategories = selectedCategories.map(id => 
+          categories.find(cat => cat._id === id)
+        ).filter(Boolean);
+        
+        updatedQuiz.category = fullCategories;
+      }
+      
+      setQuiz(updatedQuiz);
       
       setShowSettingsModal(false);
-      toast.success('Settings updated successfully!');
+      toast.success('Quiz updated successfully!');
     } catch (err) {
-      console.error('Failed to update settings:', err);
-      toast.error(err.response?.data?.error || 'Failed to update settings. Please try again.');
+      console.error('Failed to update quiz:', err);
+      toast.error(err.response?.data?.error || 'Failed to update quiz. Please try again.');
     }
   };
   
@@ -358,6 +395,15 @@ const QuizEdit = () => {
                 onChange={handleSettingsChange}
                 min="10"
                 max="300"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Categories</label>
+              <CategorySelector 
+                categories={categories} 
+                selectedIds={selectedCategories} 
+                onChange={(selectedIds) => setSelectedCategories(selectedIds)} 
               />
             </div>
             

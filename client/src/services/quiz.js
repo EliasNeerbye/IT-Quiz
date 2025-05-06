@@ -28,6 +28,7 @@ export const createQuiz = async (quizData) => {
   
   // Add category IDs if they exist
   if (quizData.categoryIds && quizData.categoryIds.length > 0) {
+    // Make sure we're sending the array of category IDs
     formData.append('categoryIds', JSON.stringify(quizData.categoryIds));
   }
   
@@ -55,6 +56,7 @@ export const updateQuiz = async (quizId, quizData) => {
   
   // Add category IDs if they exist
   if (quizData.categoryIds && quizData.categoryIds.length > 0) {
+    // Make sure we're sending the array of category IDs
     formData.append('categoryIds', JSON.stringify(quizData.categoryIds));
   }
   

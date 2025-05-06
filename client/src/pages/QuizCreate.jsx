@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { createQuiz, getCategories } from '../services/quiz';
 import Button from '../components/common/Button';
+import CategorySelector from '../components/common/CategorySelector';
 import { FaSave, FaImage, FaTimes } from 'react-icons/fa';
 
 const QuizCreate = () => {
@@ -12,6 +13,7 @@ const QuizCreate = () => {
     categoryIds: [],
     image: null
   });
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -39,22 +41,6 @@ const QuizCreate = () => {
     setFormData({
       ...formData,
       [name]: value
-    });
-  };
-  
-  const handleCategoryChange = (e) => {
-    const options = e.target.options;
-    const selectedCategories = [];
-    
-    for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        selectedCategories.push(options[i].value);
-      }
-    }
-    
-    setFormData({
-      ...formData,
-      categoryIds: selectedCategories
     });
   };
   
@@ -148,20 +134,11 @@ const QuizCreate = () => {
           
           <div className="form-group">
             <label htmlFor="categoryIds">Categories</label>
-            <select
-              id="categoryIds"
-              name="categoryIds"
-              multiple
-              value={formData.categoryIds}
-              onChange={handleCategoryChange}
-              className="form-control"
-            >
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            <CategorySelector
+              categories={categories}
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+            />
             <small className="text-muted">Hold Ctrl/Cmd to select multiple categories</small>
           </div>
           
