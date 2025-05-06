@@ -272,7 +272,10 @@ module.exports = (io) => {
                     if (isCorrect) {
                         // Determine how quickly they answered
                         const maxPoints = currentQuestion.max_points;
-                        points = maxPoints; // Full points for now (could add time factor later)
+                        const timeElapsed = (new Date() - gameSession.startTime) / 1000; // Time in seconds
+                        const timeLimit = currentQuestion.time_limit || 30; // Default 30 seconds if not set
+                        const timeBonus = Math.max(0, 1 - (timeElapsed / timeLimit)); // 0 to 1 based on time used
+                        points = Math.round(maxPoints * timeBonus); // Points reduced based on time taken
                     }
                 }
                 

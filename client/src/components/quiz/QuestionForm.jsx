@@ -265,10 +265,10 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
               <FaImage /> Choose Image
             </Button>
             
-            {previewImage && (
+            {(previewImage || formData.image) && (
               <div className="image-preview-container">
                 <img
-                  src={previewImage}
+                  src={previewImage || (formData.image?.startsWith('http') ? formData.image : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${formData.image}`)}
                   alt="Preview"
                   className="image-preview"
                 />

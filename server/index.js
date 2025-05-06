@@ -9,6 +9,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const quizRoutes = require('./routes/quiz');
@@ -29,7 +30,9 @@ const limiter = rateLimit({
     max: 100
 });
 
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:3000',
     credentials: true
@@ -49,6 +52,9 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24
     }
 }));
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Register routes
 app.use('/api/auth', authRoutes);

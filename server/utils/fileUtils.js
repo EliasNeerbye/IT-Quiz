@@ -2,6 +2,9 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
+// Get the base URL for uploads from environment variable or default to /uploads
+const UPLOAD_BASE_URL = process.env.UPLOAD_BASE_URL || 'http://localhost:5000/uploads';
+
 /**
  * Handle file upload for images
  * @param {Object} file - The file object from express-fileupload
@@ -27,7 +30,8 @@ exports.handleImageUpload = async (file, prefix = '') => {
     // Save the file
     await file.mv(uploadPath);
     
-    return `/uploads/${fileName}`;
+    // Return the full URL to the uploaded file
+    return `${UPLOAD_BASE_URL}/${fileName}`;
 };
 
 /**

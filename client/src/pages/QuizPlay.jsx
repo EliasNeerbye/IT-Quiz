@@ -1,15 +1,13 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getQuizById, submitQuizAttempt } from '../services/quiz';
-import { AuthContext } from '../contexts/AuthContext';
 import Button from '../components/common/Button';
 import { FaArrowLeft, FaArrowRight, FaCheck, FaTimes, FaTrophy } from 'react-icons/fa';
 
 const QuizPlay = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
   
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +24,14 @@ const QuizPlay = () => {
     totalQuestions: 0
   });
   const [answers, setAnswers] = useState([]);
+  
+  // Get full image URL
+  const getFullImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    return imagePath.startsWith('http') 
+      ? imagePath 
+      : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imagePath}`;
+  };
   
   // Fetch quiz data
   useEffect(() => {
@@ -51,7 +57,7 @@ const QuizPlay = () => {
         clearInterval(timer);
       }
     };
-  }, [id]);
+  }, [id, timer]);
   
   // Start the quiz
   const startQuiz = () => {
@@ -419,7 +425,10 @@ const QuizPlay = () => {
             
             {currentQuestion.image && (
               <div className="question-image">
-                <img src={currentQuestion.image} alt={currentQuestion.title} />
+                <img 
+                  src={getFullImageUrl(currentQuestion.image)} 
+                  alt={currentQuestion.title} 
+                />
               </div>
             )}
             

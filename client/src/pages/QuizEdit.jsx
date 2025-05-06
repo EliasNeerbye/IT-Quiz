@@ -25,6 +25,14 @@ const QuizEdit = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
+  // Helper function to get full image URL
+  const getFullImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    return imagePath.startsWith('http') 
+      ? imagePath 
+      : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imagePath}`;
+  };
+
   // Fetch quiz data and categories
   useEffect(() => {
     const fetchData = async () => {
@@ -255,7 +263,7 @@ const QuizEdit = () => {
         <div className="flex gap-lg">
           {quiz.image && (
             <div className="quiz-image">
-              <img src={quiz.image} alt={quiz.title} />
+              <img src={getFullImageUrl(quiz.image)} alt={quiz.title} />
             </div>
           )}
           
@@ -314,7 +322,7 @@ const QuizEdit = () => {
                   
                   {question.image && (
                     <div className="question-image mt-sm">
-                      <img src={question.image} alt={question.title} />
+                      <img src={getFullImageUrl(question.image)} alt={question.title} />
                     </div>
                   )}
                   

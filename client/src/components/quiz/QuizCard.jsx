@@ -5,7 +5,10 @@ import Button from '../common/Button';
 const QuizCard = ({ quiz, onDelete, showActions = true }) => {
   // Default image if none is provided
   const imageUrl = quiz.image || '/assets/default-quiz.jpg';
-  
+  const fullImageUrl = imageUrl.startsWith('http') 
+    ? imageUrl 
+    : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imageUrl}`;
+
   // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -18,7 +21,7 @@ const QuizCard = ({ quiz, onDelete, showActions = true }) => {
 
   return (
     <div className="quiz-card">
-      <img src={imageUrl} alt={quiz.title} className="quiz-card-img" />
+      <img src={fullImageUrl} alt={quiz.title} className="quiz-card-img" />
       
       <div className="quiz-card-body">
         <h3 className="quiz-card-title">{quiz.title}</h3>
