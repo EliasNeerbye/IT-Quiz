@@ -136,7 +136,7 @@ node index.js
   {
     "title": "Question Title",
     "text": "Question Text",
-    "type": "multiple-choice|true-false|correct-order|image-reveal",
+    "type": "multiple-choice|true-false",
     "answers": [
       {
         "text": "Answer 1",

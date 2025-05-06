@@ -12,7 +12,7 @@ const questionSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['multiple-choice', 'true-false', 'correct-order', 'image-reveal'],
+        enum: ['multiple-choice', 'true-false'],
         required: true,
     },
     answers: [{
@@ -25,7 +25,7 @@ const questionSchema = new Schema({
     },
     time_limit: {
         type: Number,
-        default: 0, // 0 means no time limit
+        default: 0,
     },
     max_points: {
         type: Number,
