@@ -21,7 +21,7 @@ const QuizCreate = () => {
   
   const navigate = useNavigate();
   
-  // Fetch categories when component mounts
+  
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -48,13 +48,13 @@ const QuizCreate = () => {
     const file = e.target.files[0];
     
     if (file) {
-      // Update form data with the file
+      
       setFormData({
         ...formData,
         image: file
       });
       
-      // Create a preview URL
+      
       const fileReader = new FileReader();
       fileReader.onload = () => {
         setPreviewImage(fileReader.result);
@@ -74,7 +74,7 @@ const QuizCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Simple validation
+    
     if (!formData.title.trim() || !formData.description.trim()) {
       setError('Title and description are required');
       return;

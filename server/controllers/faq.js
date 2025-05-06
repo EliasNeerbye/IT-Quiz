@@ -1,6 +1,6 @@
 const FAQ = require('../models/FAQ');
 
-// Get all FAQs
+
 exports.getAllFAQs = async (req, res) => {
     try {
         const faqs = await FAQ.find().sort({ order: 1 });
@@ -11,10 +11,10 @@ exports.getAllFAQs = async (req, res) => {
     }
 };
 
-// Add FAQ (admin only)
+
 exports.addFAQ = async (req, res) => {
     try {
-        // Check if user is admin
+        
         if (req.userRole !== 'admin') {
             return res.status(403).json({ error: 'Admin privileges required' });
         }
@@ -43,10 +43,10 @@ exports.addFAQ = async (req, res) => {
     }
 };
 
-// Update FAQ (admin only)
+
 exports.updateFAQ = async (req, res) => {
     try {
-        // Check if user is admin
+        
         if (req.userRole !== 'admin') {
             return res.status(403).json({ error: 'Admin privileges required' });
         }
@@ -76,10 +76,10 @@ exports.updateFAQ = async (req, res) => {
     }
 };
 
-// Delete FAQ (admin only)
+
 exports.deleteFAQ = async (req, res) => {
     try {
-        // Check if user is admin
+        
         if (req.userRole !== 'admin') {
             return res.status(403).json({ error: 'Admin privileges required' });
         }

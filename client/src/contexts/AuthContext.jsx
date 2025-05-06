@@ -1,16 +1,16 @@
 import { createContext, useState, useEffect } from 'react';
 import { getCurrentUser, login, logout, register } from '../services/auth';
 
-// Create the context
+
 export const AuthContext = createContext();
 
-// Create provider component
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Check if user is authenticated on mount
+  
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
           setUser(response.user);
         }
       } catch (err) {
-        // User not authenticated, that's okay
+        
         setUser(null);
       } finally {
         setLoading(false);
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
   
-  // Login user
+  
   const handleLogin = async (credentials) => {
     try {
       setLoading(true);
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  // Register user
+  
   const handleRegister = async (userData) => {
     try {
       setLoading(true);
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  // Logout user
+  
   const handleLogout = async () => {
     try {
       setLoading(true);
@@ -79,12 +79,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  // Clear any errors
+  
   const clearError = () => {
     setError(null);
   };
   
-  // Create the context value
+  
   const value = {
     user,
     loading,

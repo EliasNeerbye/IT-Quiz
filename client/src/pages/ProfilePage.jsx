@@ -17,7 +17,7 @@ const ProfilePage = () => {
   
   const navigate = useNavigate();
   
-  // Fetch user's quizzes
+  
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -35,7 +35,7 @@ const ProfilePage = () => {
     fetchQuizzes();
   }, []);
   
-  // Handle deleting account
+  
   const handleDeleteAccount = async () => {
     if (!window.confirm('Are you ABSOLUTELY sure you want to delete your account? This action CANNOT be undone!')) {
       return;
@@ -52,7 +52,7 @@ const ProfilePage = () => {
     }
   };
   
-  // Format date
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {

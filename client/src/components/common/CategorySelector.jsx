@@ -2,19 +2,19 @@ import { FaTimes } from 'react-icons/fa';
 import '../../styles/CategorySelector.css';
 
 const CategorySelector = ({ categories, selectedIds = [], onChange }) => {
-  // Toggle category selection
+  
   const toggleCategory = (categoryId) => {
     let newSelected;
     
     if (selectedIds.includes(categoryId)) {
-      // Remove if already selected
+      
       newSelected = selectedIds.filter(id => id !== categoryId);
     } else {
-      // Add if not selected
+      
       newSelected = [...selectedIds, categoryId];
     }
     
-    // Notify parent component
+    
     if (onChange) {
       onChange(newSelected);
     }

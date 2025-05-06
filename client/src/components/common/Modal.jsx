@@ -4,7 +4,7 @@ import { FaTimes } from 'react-icons/fa';
 const Modal = ({ title, children, onClose }) => {
   const modalRef = useRef(null);
 
-  // Close modal when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -12,21 +12,21 @@ const Modal = ({ title, children, onClose }) => {
       }
     };
 
-    // Close modal on escape key
+    
     const handleEscKey = (event) => {
       if (event.key === 'Escape') {
         onClose();
       }
     };
 
-    // Add event listeners
+    
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscKey);
 
-    // Prevent body scrolling
+    
     document.body.style.overflow = 'hidden';
 
-    // Clean up event listeners
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscKey);

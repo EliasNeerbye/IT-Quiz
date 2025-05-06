@@ -8,7 +8,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const fileUtils = require('../utils/fileUtils');
 
-// Get all public quizzes
+
 exports.getAllPublicQuizzes = async (req, res) => {
     try {
         const quizzes = await Quiz.find({ isDraft: false })
@@ -16,7 +16,7 @@ exports.getAllPublicQuizzes = async (req, res) => {
             .populate('category', 'name')
             .populate('settings');
         
-        // Filter out private quizzes
+        
         const publicQuizzes = quizzes.filter(quiz => 
             !quiz.settings || !quiz.settings.private
         );
@@ -28,7 +28,7 @@ exports.getAllPublicQuizzes = async (req, res) => {
     }
 };
 
-// Get all user's quizzes (drafts and published)
+
 exports.getUserQuizzes = async (req, res) => {
     try {
         const quizzes = await Quiz.find({ creator: req.userId })
@@ -43,7 +43,7 @@ exports.getUserQuizzes = async (req, res) => {
     }
 };
 
-// Get quiz by ID
+
 exports.getQuizById = async (req, res) => {
     try {
         const { quizId } = req.params;
@@ -58,7 +58,7 @@ exports.getQuizById = async (req, res) => {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Check if the quiz is private and user is not the creator
+        
         if (quiz.settings && quiz.settings.private && 
             quiz.creator._id.toString() !== req.userId.toString()) {
             return res.status(403).json({ error: 'This quiz is private' });
@@ -71,7 +71,7 @@ exports.getQuizById = async (req, res) => {
     }
 };
 
-// Create new quiz (draft)
+
 exports.createQuiz = async (req, res) => {
     try {
         const { title, description, categoryIds } = req.body;
@@ -81,7 +81,7 @@ exports.createQuiz = async (req, res) => {
             return res.status(400).json({ error: 'Title and description are required' });
         }
         
-        // Handle image upload if exists
+        
         if (req.files && req.files.image) {
             try {
                 imagePath = await fileUtils.handleImageUpload(req.files.image, 'quiz_');
@@ -90,7 +90,7 @@ exports.createQuiz = async (req, res) => {
             }
         }
         
-        // Create default settings
+        
         const settings = new Settings({
             private: false,
             multiplayer: true,
@@ -99,7 +99,7 @@ exports.createQuiz = async (req, res) => {
         
         await settings.save();
         
-        // Create quiz with draft status
+        
         const quiz = new Quiz({
             title,
             description,
@@ -113,7 +113,7 @@ exports.createQuiz = async (req, res) => {
         
         await quiz.save();
         
-        // Update user's quizzes array
+        
         await User.findByIdAndUpdate(req.userId, {
             $push: { quizzes: quiz._id }
         });
@@ -128,38 +128,38 @@ exports.createQuiz = async (req, res) => {
     }
 };
 
-// Update quiz (only if draft)
+
 exports.updateQuiz = async (req, res) => {
     try {
         const { quizId } = req.params;
         const { title, description, categoryIds, settings } = req.body;
         
-        // Find the quiz
+        
         const quiz = await Quiz.findById(quizId);
         
         if (!quiz) {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Check if user is the creator
+        
         if (quiz.creator.toString() !== req.userId.toString()) {
             return res.status(403).json({ error: 'You can only edit your own quizzes' });
         }
         
-        // Check if quiz is still a draft
+        
         if (!quiz.isDraft) {
             return res.status(400).json({ error: 'Published quizzes cannot be edited' });
         }
         
-        // Handle image upload if exists
+        
         if (req.files && req.files.image) {
             try {
-                // Delete old image if exists
+                
                 if (quiz.image) {
                     fileUtils.deleteFile(quiz.image);
                 }
                 
-                // Upload new image
+                
                 const imagePath = await fileUtils.handleImageUpload(req.files.image, 'quiz_');
                 quiz.image = imagePath;
             } catch (err) {
@@ -167,14 +167,14 @@ exports.updateQuiz = async (req, res) => {
             }
         }
         
-        // Update quiz properties
+        
         if (title) quiz.title = title;
         if (description) quiz.description = description;
         if (categoryIds) quiz.category = categoryIds;
         
         await quiz.save();
         
-        // Update settings if provided
+        
         if (settings) {
             await Settings.findByIdAndUpdate(quiz.settings, settings);
         }
@@ -189,7 +189,7 @@ exports.updateQuiz = async (req, res) => {
     }
 };
 
-// Add question to quiz
+
 exports.addQuestion = async (req, res) => {
     try {
         const { quizId } = req.params;
@@ -200,24 +200,24 @@ exports.addQuestion = async (req, res) => {
             return res.status(400).json({ error: 'Title, text, and question type are required' });
         }
         
-        // Find the quiz
+        
         const quiz = await Quiz.findById(quizId);
         
         if (!quiz) {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Check if user is the creator
+        
         if (quiz.creator.toString() !== req.userId.toString()) {
             return res.status(403).json({ error: 'You can only edit your own quizzes' });
         }
         
-        // Check if quiz is still a draft
+        
         if (!quiz.isDraft) {
             return res.status(400).json({ error: 'Published quizzes cannot be edited' });
         }
         
-        // Handle image upload if exists
+        
         if (req.files && req.files.image) {
             try {
                 imagePath = await fileUtils.handleImageUpload(req.files.image, 'question_');
@@ -226,7 +226,7 @@ exports.addQuestion = async (req, res) => {
             }
         }
         
-        // Parse the answers if they're sent as a string
+        
         let parsedAnswers = answers;
         if (typeof answers === 'string') {
             try {
@@ -236,7 +236,7 @@ exports.addQuestion = async (req, res) => {
             }
         }
         
-        // Create the question
+        
         const question = new Question({
             title,
             text,
@@ -249,7 +249,7 @@ exports.addQuestion = async (req, res) => {
         
         await question.save();
         
-        // Add question to quiz
+        
         quiz.questions.push(question._id);
         await quiz.save();
         
@@ -263,43 +263,43 @@ exports.addQuestion = async (req, res) => {
     }
 };
 
-// Remove question from quiz
+
 exports.removeQuestion = async (req, res) => {
     try {
         const { quizId, questionId } = req.params;
         
-        // Find the quiz
+        
         const quiz = await Quiz.findById(quizId);
         
         if (!quiz) {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Check if user is the creator
+        
         if (quiz.creator.toString() !== req.userId.toString()) {
             return res.status(403).json({ error: 'You can only edit your own quizzes' });
         }
         
-        // Check if quiz is still a draft
+        
         if (!quiz.isDraft) {
             return res.status(400).json({ error: 'Published quizzes cannot be edited' });
         }
         
-        // Find the question first to get its image if it exists
+        
         const question = await Question.findById(questionId);
         if (question && question.image) {
-            // Delete the image file
+            
             fileUtils.deleteFile(question.image);
         }
         
-        // Remove question from quiz
+        
         quiz.questions = quiz.questions.filter(
             q => q.toString() !== questionId
         );
         
         await quiz.save();
         
-        // Delete the question
+        
         await Question.findByIdAndDelete(questionId);
         
         res.json({ message: 'Question removed successfully' });
@@ -309,34 +309,34 @@ exports.removeQuestion = async (req, res) => {
     }
 };
 
-// Publish quiz
+
 exports.publishQuiz = async (req, res) => {
     try {
         const { quizId } = req.params;
         
-        // Find the quiz
+        
         const quiz = await Quiz.findById(quizId);
         
         if (!quiz) {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Check if user is the creator
+        
         if (quiz.creator.toString() !== req.userId.toString()) {
             return res.status(403).json({ error: 'You can only publish your own quizzes' });
         }
         
-        // Check if quiz is still a draft
+        
         if (!quiz.isDraft) {
             return res.status(400).json({ error: 'Quiz is already published' });
         }
         
-        // Check if quiz has questions
+        
         if (quiz.questions.length === 0) {
             return res.status(400).json({ error: 'Quiz must have at least one question' });
         }
         
-        // Publish the quiz
+        
         quiz.isDraft = false;
         await quiz.save();
         
@@ -350,29 +350,29 @@ exports.publishQuiz = async (req, res) => {
     }
 };
 
-// Delete quiz (user's own)
+
 exports.deleteQuiz = async (req, res) => {
     try {
         const { quizId } = req.params;
         
-        // Find the quiz
+        
         const quiz = await Quiz.findById(quizId).populate('questions');
         
         if (!quiz) {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Check if user is the creator
+        
         if (quiz.creator.toString() !== req.userId.toString()) {
             return res.status(403).json({ error: 'You can only delete your own quizzes' });
         }
         
-        // Delete quiz image if exists
+        
         if (quiz.image) {
             fileUtils.deleteFile(quiz.image);
         }
         
-        // Delete all questions and their images
+        
         for (const question of quiz.questions) {
             if (question.image) {
                 fileUtils.deleteFile(question.image);
@@ -380,13 +380,13 @@ exports.deleteQuiz = async (req, res) => {
             await Question.findByIdAndDelete(question._id);
         }
         
-        // Delete the settings
+        
         await Settings.findByIdAndDelete(quiz.settings);
         
-        // Delete the quiz
+        
         await Quiz.findByIdAndDelete(quizId);
         
-        // Remove from user's quizzes array
+        
         await User.findByIdAndUpdate(req.userId, {
             $pull: { quizzes: quizId }
         });
@@ -398,7 +398,7 @@ exports.deleteQuiz = async (req, res) => {
     }
 };
 
-// Submit quiz attempt (single player)
+
 exports.submitQuizAttempt = async (req, res) => {
     try {
         const { quizId } = req.params;
@@ -413,7 +413,7 @@ exports.submitQuizAttempt = async (req, res) => {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Create quiz attempt
+        
         const quizAttempt = new QuizAttempt({
             user: req.userId,
             quiz: quizId,
@@ -427,7 +427,7 @@ exports.submitQuizAttempt = async (req, res) => {
         
         await quizAttempt.save();
         
-        // Add attempt to quiz
+        
         quiz.quiz_attempts.push(quizAttempt._id);
         await quiz.save();
         
@@ -441,7 +441,7 @@ exports.submitQuizAttempt = async (req, res) => {
     }
 };
 
-// Get quiz leaderboard
+
 exports.getQuizLeaderboard = async (req, res) => {
     try {
         const { quizId } = req.params;
@@ -451,11 +451,11 @@ exports.getQuizLeaderboard = async (req, res) => {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Get all attempts for this quiz
+        
         const attempts = await QuizAttempt.find({ quiz: quizId })
             .populate('user', 'username');
         
-        // Sort by points (highest first)
+        
         attempts.sort((a, b) => b.score.points - a.score.points);
         
         res.json({
@@ -467,7 +467,7 @@ exports.getQuizLeaderboard = async (req, res) => {
     }
 };
 
-// Get all categories
+
 exports.getCategories = async (req, res) => {
     try {
         const categories = await Category.find();
@@ -478,10 +478,10 @@ exports.getCategories = async (req, res) => {
     }
 };
 
-// Create category (admin only)
+
 exports.createCategory = async (req, res) => {
     try {
-        // Check if user is admin
+        
         if (req.userRole !== 'admin') {
             return res.status(403).json({ error: 'Admin privileges required' });
         }

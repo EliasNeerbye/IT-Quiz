@@ -15,7 +15,7 @@ const JoinGame = () => {
   const { user } = useContext(AuthContext);
   const { gameState, setUpGame } = useContext(SocketContext);
   
-  // Handle joining a game
+  
   const handleJoinGame = async (e) => {
     e.preventDefault();
     
@@ -28,10 +28,10 @@ const JoinGame = () => {
       setJoiningGame(true);
       setError(null);
       
-      // Join the game
+      
       const gameData = await joinGame(gameCode, user.id);
       
-      // Set up game state
+      
       setUpGame(gameData);
     } catch (err) {
       console.error('Failed to join game:', err);
@@ -41,7 +41,7 @@ const JoinGame = () => {
     }
   };
   
-  // If in a game, show game component
+  
   if (gameState.inGame) {
     if (gameState.inProgress) {
       return <MultiplayerGame />;

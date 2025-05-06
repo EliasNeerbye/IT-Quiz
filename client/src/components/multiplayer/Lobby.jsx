@@ -8,13 +8,13 @@ import { toast } from 'react-toastify';
 const Lobby = ({ isHost, onStartGame, readyToStart }) => {
   const { gameState, resetGame } = useContext(SocketContext);
   
-  // Handle copy game code
+  
   const handleCopyCode = () => {
     navigator.clipboard.writeText(gameState.gameCode);
     toast.info('Game code copied to clipboard!');
   };
   
-  // Handle leaving the game
+  
   const handleLeaveGame = () => {
     if (window.confirm('Are you sure you want to leave this game?')) {
       leaveGame(gameState.gameCode);

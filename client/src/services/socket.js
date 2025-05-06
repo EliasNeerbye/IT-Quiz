@@ -1,9 +1,9 @@
 import { io } from 'socket.io-client';
 
-// Create a Socket.IO instance
+
 let socket = null;
 
-// Initialize socket connection
+
 export const initSocket = () => {
   if (!socket) {
     socket = io(import.meta.env.VITE_SOCKET_URL, {
@@ -26,7 +26,7 @@ export const initSocket = () => {
   return socket;
 };
 
-// Disconnect socket
+
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();
@@ -34,7 +34,7 @@ export const disconnectSocket = () => {
   }
 };
 
-// Host a game
+
 export const createGame = (quizId, userId) => {
   return new Promise((resolve, reject) => {
     if (!socket) {
@@ -53,7 +53,7 @@ export const createGame = (quizId, userId) => {
   });
 };
 
-// Join a game
+
 export const joinGame = (gameCode, userId) => {
   return new Promise((resolve, reject) => {
     if (!socket) {
@@ -72,7 +72,7 @@ export const joinGame = (gameCode, userId) => {
   });
 };
 
-// Start a game
+
 export const startGame = (gameCode) => {
   if (!socket) {
     initSocket();
@@ -81,7 +81,7 @@ export const startGame = (gameCode) => {
   socket.emit('start_game', { gameCode });
 };
 
-// Submit an answer
+
 export const submitAnswer = (gameCode, questionId, answerId) => {
   if (!socket) {
     initSocket();
@@ -90,7 +90,7 @@ export const submitAnswer = (gameCode, questionId, answerId) => {
   socket.emit('submit_answer', { gameCode, questionId, answerId });
 };
 
-// Leave a game
+
 export const leaveGame = (gameCode) => {
   if (!socket) {
     return;

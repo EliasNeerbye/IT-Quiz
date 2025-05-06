@@ -22,7 +22,7 @@ const Register = () => {
       [name]: value,
     });
     
-    // Clear any errors when the user starts typing
+    
     if (formError) setFormError('');
     if (error) clearError();
   };
@@ -60,12 +60,12 @@ const Register = () => {
     }
     
     try {
-      // Remove confirmPassword before sending to the server
+      
       const { confirmPassword, ...registerData } = formData;
       await register(registerData);
       navigate('/');
     } catch (err) {
-      // Error is already handled in the context
+      
       console.error('Registration failed:', err);
     }
   };

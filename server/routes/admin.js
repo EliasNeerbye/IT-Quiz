@@ -3,7 +3,7 @@ const router = express.Router();
 const adminController = require('../controllers/admin');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
-// All routes require authentication and admin privileges
+
 router.use(isAuthenticated, isAdmin);
 
 router.get('/users', adminController.getAllUsers);

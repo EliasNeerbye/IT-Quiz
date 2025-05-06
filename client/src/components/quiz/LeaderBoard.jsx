@@ -18,7 +18,7 @@ const LeaderBoard = () => {
       try {
         setLoading(true);
         
-        // Fetch quiz and leaderboard data
+        
         const [quizResponse, leaderboardResponse] = await Promise.all([
           getQuizById(quizId),
           getQuizLeaderboard(quizId)
@@ -37,7 +37,7 @@ const LeaderBoard = () => {
     fetchData();
   }, [quizId]);
   
-  // Format date
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {

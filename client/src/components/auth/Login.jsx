@@ -20,7 +20,7 @@ const Login = () => {
       [name]: value,
     });
     
-    // Clear any errors when the user starts typing
+    
     if (formError) setFormError('');
     if (error) clearError();
   };
@@ -28,7 +28,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate the form
+    
     if (!formData.email || !formData.password) {
       setFormError('Please enter both email and password');
       return;
@@ -38,7 +38,7 @@ const Login = () => {
       await login(formData);
       navigate('/');
     } catch (err) {
-      // Error is already handled in the context
+      
       console.error('Login failed:', err);
     }
   };

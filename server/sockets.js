@@ -2,33 +2,33 @@ const Quiz = require('./models/Quiz');
 const QuizAttempt = require('./models/Quiz_Attempt');
 const User = require('./models/User');
 
-// Generate a random 6-digit code
+
 const generateGameCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Store active game sessions
+
 const activeGames = new Map();
-// Structure: { 
-//   gameCode: {
-//     quiz: quizObject,
-//     host: userId,
-//     players: [{ id: socketId, userId, username, score: 0, answers: [] }],
-//     status: 'waiting'|'active'|'finished',
-//     currentQuestion: 0,
-//     startTime: Date,
-//     results: []
-//   }
-// }
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = (io) => {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
         
-        // Host creates a new game
+        
         socket.on('create_game', async ({ quizId, userId }) => {
             try {
-                // Fetch the quiz
+                
                 const quiz = await Quiz.findById(quizId)
                     .populate('questions')
                     .populate('settings');
@@ -37,24 +37,24 @@ module.exports = (io) => {
                     return socket.emit('error', { message: 'Quiz not found' });
                 }
                 
-                // Get the host user
+                
                 const user = await User.findById(userId);
                 if (!user) {
                     return socket.emit('error', { message: 'User not found' });
                 }
                 
-                // Check if multiplayer is enabled for this quiz
+                
                 if (quiz.settings && !quiz.settings.multiplayer) {
                     return socket.emit('error', { message: 'Multiplayer is not enabled for this quiz' });
                 }
                 
-                // Generate a unique game code
+                
                 let gameCode;
                 do {
                     gameCode = generateGameCode();
                 } while (activeGames.has(gameCode));
                 
-                // Create a new game session
+                
                 const gameSession = {
                     quiz,
                     host: userId,
@@ -71,13 +71,13 @@ module.exports = (io) => {
                     results: []
                 };
                 
-                // Add the game to active games
+                
                 activeGames.set(gameCode, gameSession);
                 
-                // Join the socket to the game room
+                
                 socket.join(gameCode);
                 
-                // Send game created confirmation
+                
                 socket.emit('game_created', {
                     gameCode,
                     quiz: {
@@ -88,7 +88,7 @@ module.exports = (io) => {
                     }
                 });
                 
-                // Broadcast to the room that a new player joined
+                
                 io.to(gameCode).emit('player_joined', {
                     players: gameSession.players.map(p => ({
                         id: p.id,
@@ -101,33 +101,33 @@ module.exports = (io) => {
             }
         });
         
-        // Player joins a game with code
+        
         socket.on('join_game', async ({ gameCode, userId }) => {
             try {
-                // Check if the game exists
+                
                 if (!activeGames.has(gameCode)) {
                     return socket.emit('error', { message: 'Game not found' });
                 }
                 
                 const gameSession = activeGames.get(gameCode);
                 
-                // Check if the game is still accepting players
+                
                 if (gameSession.status !== 'waiting') {
                     return socket.emit('error', { message: 'Game has already started' });
                 }
                 
-                // Check if the player limit is reached
+                
                 if (gameSession.players.length >= 20) {
                     return socket.emit('error', { message: 'Game is full' });
                 }
                 
-                // Get the user
+                
                 const user = await User.findById(userId);
                 if (!user) {
                     return socket.emit('error', { message: 'User not found' });
                 }
                 
-                // Add player to the game
+                
                 gameSession.players.push({
                     id: socket.id,
                     userId,
@@ -136,10 +136,10 @@ module.exports = (io) => {
                     answers: []
                 });
                 
-                // Join the socket to the game room
+                
                 socket.join(gameCode);
                 
-                // Send game joined confirmation
+                
                 socket.emit('game_joined', {
                     gameCode,
                     quiz: {
@@ -150,7 +150,7 @@ module.exports = (io) => {
                     }
                 });
                 
-                // Broadcast to the room that a new player joined
+                
                 io.to(gameCode).emit('player_joined', {
                     players: gameSession.players.map(p => ({
                         id: p.id,
@@ -158,7 +158,7 @@ module.exports = (io) => {
                     }))
                 });
                 
-                // Check if we can start (at least 2 players)
+                
                 if (gameSession.players.length >= 2) {
                     io.to(gameCode).emit('ready_to_start');
                 }
@@ -168,32 +168,32 @@ module.exports = (io) => {
             }
         });
         
-        // Host starts the game
+        
         socket.on('start_game', ({ gameCode }) => {
             try {
-                // Check if the game exists
+                
                 if (!activeGames.has(gameCode)) {
                     return socket.emit('error', { message: 'Game not found' });
                 }
                 
                 const gameSession = activeGames.get(gameCode);
                 
-                // Check if user is the host
+                
                 const player = gameSession.players.find(p => p.id === socket.id);
                 if (!player || player.userId.toString() !== gameSession.host.toString()) {
                     return socket.emit('error', { message: 'Only the host can start the game' });
                 }
                 
-                // Check if we have enough players
+                
                 if (gameSession.players.length < 2) {
                     return socket.emit('error', { message: 'Need at least 2 players to start' });
                 }
                 
-                // Start the game
+                
                 gameSession.status = 'active';
                 gameSession.startTime = new Date();
                 
-                // Send first question
+                
                 const currentQuestion = gameSession.quiz.questions[0];
                 const sanitizedQuestion = {
                     id: currentQuestion._id,
@@ -206,7 +206,7 @@ module.exports = (io) => {
                 };
 
                 
-                // If it's a multiple choice, send the answers without marking which is correct
+                
                 if (currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'true-false') {
                     sanitizedQuestion.answers = currentQuestion.answers.map(a => ({
                         id: a._id,
@@ -214,7 +214,7 @@ module.exports = (io) => {
                     }));
                 }
                 
-                // Broadcast game started with first question
+                
                 io.to(gameCode).emit('game_started', {
                     question: sanitizedQuestion,
                     questionNumber: 1,
@@ -226,60 +226,60 @@ module.exports = (io) => {
             }
         });
         
-        // Player submits an answer
+        
         socket.on('submit_answer', ({ gameCode, questionId, answerId }) => {
             try {
-                // Check if the game exists
+                
                 if (!activeGames.has(gameCode)) {
                     return socket.emit('error', { message: 'Game not found' });
                 }
                 
                 const gameSession = activeGames.get(gameCode);
                 
-                // Check if game is active
+                
                 if (gameSession.status !== 'active') {
                     return socket.emit('error', { message: 'Game is not active' });
                 }
                 
-                // Find the player
+                
                 const playerIndex = gameSession.players.findIndex(p => p.id === socket.id);
                 if (playerIndex === -1) {
                     return socket.emit('error', { message: 'Player not found in game' });
                 }
                 
-                // Get the current question
+                
                 const currentQuestion = gameSession.quiz.questions[gameSession.currentQuestion];
                 
-                // Validate question ID
+                
                 if (currentQuestion._id.toString() !== questionId) {
                     return socket.emit('error', { message: 'Invalid question' });
                 }
                 
-                // Check if player already answered
+                
                 if (gameSession.players[playerIndex].answers.some(a => a.questionId === questionId)) {
                     return socket.emit('error', { message: 'Already answered this question' });
                 }
                 
-                // Calculate score based on correct answer and time
+                
                 let isCorrect = false;
                 let points = 0;
                 
                 if (currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'true-false') {
-                    // Find if answer is correct
+                    
                     const correctAnswer = currentQuestion.answers.find(a => a.isCorrect);
                     isCorrect = correctAnswer && correctAnswer._id.toString() === answerId;
                     
                     if (isCorrect) {
-                        // Determine how quickly they answered
+                        
                         const maxPoints = currentQuestion.max_points;
-                        const timeElapsed = (new Date() - gameSession.startTime) / 1000; // Time in seconds
-                        const timeLimit = currentQuestion.time_limit || 30; // Default 30 seconds if not set
-                        const timeBonus = Math.max(0, 1 - (timeElapsed / timeLimit)); // 0 to 1 based on time used
-                        points = Math.round(maxPoints * timeBonus); // Points reduced based on time taken
+                        const timeElapsed = (new Date() - gameSession.startTime) / 1000; 
+                        const timeLimit = currentQuestion.time_limit || 30; 
+                        const timeBonus = Math.max(0, 1 - (timeElapsed / timeLimit)); 
+                        points = Math.round(maxPoints * timeBonus); 
                     }
                 }
                 
-                // Record the answer
+                
                 gameSession.players[playerIndex].answers.push({
                     questionId,
                     answerId,
@@ -287,42 +287,42 @@ module.exports = (io) => {
                     points
                 });
                 
-                // Update player's score
+                
                 gameSession.players[playerIndex].score += points;
                 
-                // Acknowledge the answer was received
+                
                 socket.emit('answer_received', {
                     isCorrect,
                     points,
                     totalScore: gameSession.players[playerIndex].score
                 });
                 
-                // Check if all players have answered
+                
                 const allAnswered = gameSession.players.every(p => 
                     p.answers.some(a => a.questionId === questionId)
                 );
                 
                 if (allAnswered) {
-                    // Send results for this question
+                    
                     const questionResults = gameSession.players.map(p => ({
                         username: p.username,
                         score: p.score,
                         isCorrect: p.answers.find(a => a.questionId === questionId)?.isCorrect || false
                     }));
                     
-                    // Sort by score (highest first)
+                    
                     questionResults.sort((a, b) => b.score - a.score);
                     
                     io.to(gameCode).emit('question_results', {
                         results: questionResults
                     });
                     
-                    // Check if this was the last question
+                    
                     if (gameSession.currentQuestion >= gameSession.quiz.questions.length - 1) {
-                        // Game is over
+                        
                         gameSession.status = 'finished';
                         
-                        // Calculate final results
+                        
                         const finalResults = gameSession.players.map(p => ({
                             userId: p.userId,
                             username: p.username,
@@ -330,13 +330,13 @@ module.exports = (io) => {
                             correctAnswers: p.answers.filter(a => a.isCorrect).length
                         }));
                         
-                        // Sort by score (highest first)
+                        
                         finalResults.sort((a, b) => b.score - a.score);
                         
-                        // Store the results
+                        
                         gameSession.results = finalResults;
                         
-                        // Save quiz attempts to the database
+                        
                         finalResults.forEach(async (result) => {
                             try {
                                 const quizAttempt = new QuizAttempt({
@@ -352,7 +352,7 @@ module.exports = (io) => {
                                 
                                 await quizAttempt.save();
                                 
-                                // Add attempt to quiz
+                                
                                 await Quiz.findByIdAndUpdate(
                                     gameSession.quiz._id,
                                     { $push: { quiz_attempts: quizAttempt._id } }
@@ -362,21 +362,21 @@ module.exports = (io) => {
                             }
                         });
                         
-                        // Send game over event
+                        
                         io.to(gameCode).emit('game_over', {
                             results: finalResults
                         });
                         
-                        // Clean up after a delay
+                        
                         setTimeout(() => {
                             activeGames.delete(gameCode);
-                        }, 30 * 60 * 1000); // Keep results for 30 minutes
+                        }, 30 * 60 * 1000); 
                     } else {
-                        // Move to the next question
+                        
                         gameSession.currentQuestion++;
                         const nextQuestion = gameSession.quiz.questions[gameSession.currentQuestion];
                         
-                        // Prepare the next question
+                        
                         const sanitizedQuestion = {
                             id: nextQuestion._id,
                             title: nextQuestion.title,
@@ -387,7 +387,7 @@ module.exports = (io) => {
                             max_points: nextQuestion.max_points
                         };
                         
-                        // If it's a multiple choice, send the answers without marking which is correct
+                        
                         if (nextQuestion.type === 'multiple-choice' || nextQuestion.type === 'true-false') {
                             sanitizedQuestion.answers = nextQuestion.answers.map(a => ({
                                 id: a._id,
@@ -395,14 +395,14 @@ module.exports = (io) => {
                             }));
                         }
                         
-                        // Send next question after a delay
+                        
                         setTimeout(() => {
                             io.to(gameCode).emit('next_question', {
                                 question: sanitizedQuestion,
                                 questionNumber: gameSession.currentQuestion + 1,
                                 totalQuestions: gameSession.quiz.questions.length
                             });
-                        }, 5000); // 5 second delay between questions
+                        }, 5000); 
                     }
                 }
             } catch (err) {
@@ -411,23 +411,23 @@ module.exports = (io) => {
             }
         });
         
-        // Player leaves the game
+        
         socket.on('leave_game', ({ gameCode }) => {
             try {
-                // Check if the game exists
+                
                 if (!activeGames.has(gameCode)) {
                     return;
                 }
                 
                 const gameSession = activeGames.get(gameCode);
                 
-                // Remove player from the game
+                
                 const playerIndex = gameSession.players.findIndex(p => p.id === socket.id);
                 if (playerIndex !== -1) {
                     const player = gameSession.players[playerIndex];
                     gameSession.players.splice(playerIndex, 1);
                     
-                    // Broadcast that a player left
+                    
                     io.to(gameCode).emit('player_left', {
                         players: gameSession.players.map(p => ({
                             id: p.id,
@@ -438,45 +438,45 @@ module.exports = (io) => {
                         }
                     });
                     
-                    // If the host left, end the game
+                    
                     if (player.userId.toString() === gameSession.host.toString() && gameSession.status !== 'finished') {
                         gameSession.status = 'finished';
                         io.to(gameCode).emit('game_canceled', {
                             message: 'Host left the game'
                         });
                         
-                        // Clean up after a delay
+                        
                         setTimeout(() => {
                             activeGames.delete(gameCode);
-                        }, 5 * 60 * 1000); // Keep for 5 minutes
+                        }, 5 * 60 * 1000); 
                     }
                     
-                    // If no players left, remove the game
+                    
                     if (gameSession.players.length === 0) {
                         activeGames.delete(gameCode);
                     }
                 }
                 
-                // Leave the socket room
+                
                 socket.leave(gameCode);
             } catch (err) {
                 console.error('Leave game error:', err);
             }
         });
         
-        // Handle disconnections
+        
         socket.on('disconnect', () => {
             console.log('User disconnected:', socket.id);
             
-            // Find any games this socket is in
+            
             for (const [gameCode, gameSession] of activeGames.entries()) {
                 const playerIndex = gameSession.players.findIndex(p => p.id === socket.id);
                 if (playerIndex !== -1) {
-                    // Handle as if the player left the game
+                    
                     const player = gameSession.players[playerIndex];
                     gameSession.players.splice(playerIndex, 1);
                     
-                    // Broadcast that a player left
+                    
                     io.to(gameCode).emit('player_left', {
                         players: gameSession.players.map(p => ({
                             id: p.id,
@@ -487,20 +487,20 @@ module.exports = (io) => {
                         }
                     });
                     
-                    // If the host left, end the game
+                    
                     if (player.userId.toString() === gameSession.host.toString() && gameSession.status !== 'finished') {
                         gameSession.status = 'finished';
                         io.to(gameCode).emit('game_canceled', {
                             message: 'Host left the game'
                         });
                         
-                        // Clean up after a delay
+                        
                         setTimeout(() => {
                             activeGames.delete(gameCode);
-                        }, 5 * 60 * 1000); // Keep for 5 minutes
+                        }, 5 * 60 * 1000); 
                     }
                     
-                    // If no players left, remove the game
+                    
                     if (gameSession.players.length === 0) {
                         activeGames.delete(gameCode);
                     }
