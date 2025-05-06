@@ -10,6 +10,10 @@ const quizSchema = new Schema({
         type: String,
         required: true,
     },
+    image: {
+        type: String,
+        default: null,
+    },
     isDraft: {
         type: Boolean,
         default: true,
