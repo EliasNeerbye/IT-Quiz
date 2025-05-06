@@ -25,7 +25,7 @@ const QuizEdit = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-  // Helper function to get full image URL
+  
   const getFullImageUrl = (imagePath) => {
     if (!imagePath) return null;
     return imagePath.startsWith('http') 
@@ -33,13 +33,13 @@ const QuizEdit = () => {
       : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imagePath}`;
   };
 
-  // Fetch quiz data and categories
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // Fetch quiz and categories in parallel
+        
         const [quizResponse, categoriesResponse] = await Promise.all([
           getQuizById(id),
           getCategories()
@@ -48,7 +48,7 @@ const QuizEdit = () => {
         const quiz = quizResponse.quiz;
         setQuiz(quiz);
         
-        // Initialize settings form if quiz has settings
+        
         if (quiz.settings) {
           setSettingsForm({
             private: quiz.settings.private || false,
@@ -57,12 +57,12 @@ const QuizEdit = () => {
           });
         }
         
-        // Set available categories
+        
         setCategories(categoriesResponse.categories || []);
         
-        // Set initially selected categories
+        
         if (quiz.category && quiz.category.length > 0) {
-          // Extract just the IDs
+          
           const categoryIds = quiz.category.map(cat => cat._id);
           setSelectedCategories(categoryIds);
         }
@@ -77,12 +77,12 @@ const QuizEdit = () => {
     fetchData();
   }, [id]);
   
-  // Handle submitting a new question
+  
   const handleQuestionSubmit = async (questionData) => {
     try {
       const response = await addQuestion(id, questionData);
       
-      // Update quiz with new question
+      
       setQuiz({
         ...quiz,
         questions: [...quiz.questions, response.question]
@@ -96,7 +96,7 @@ const QuizEdit = () => {
     }
   };
   
-  // Handle removing a question
+  
   const handleRemoveQuestion = async (questionId) => {
     if (!window.confirm('Are you sure you want to remove this question?')) {
       return;
@@ -105,7 +105,7 @@ const QuizEdit = () => {
     try {
       await removeQuestion(id, questionId);
       
-      // Update quiz by filtering out the removed question
+      
       setQuiz({
         ...quiz,
         questions: quiz.questions.filter(q => q._id !== questionId)
@@ -118,7 +118,7 @@ const QuizEdit = () => {
     }
   };
   
-  // Handle publishing the quiz
+  
   const handlePublishQuiz = async () => {
     if (quiz.questions.length === 0) {
       toast.error('You need to add at least one question before publishing.');
@@ -132,7 +132,7 @@ const QuizEdit = () => {
     try {
       await publishQuiz(id);
       
-      // Update quiz to reflect published status
+      
       setQuiz({
         ...quiz,
         isDraft: false
@@ -146,7 +146,7 @@ const QuizEdit = () => {
     }
   };
   
-  // Handle settings changes
+  
   const handleSettingsChange = (e) => {
     const { name, value, type, checked } = e.target;
     
@@ -156,10 +156,10 @@ const QuizEdit = () => {
     });
   };
   
-  // Save settings
+  
   const handleSaveSettings = async () => {
     try {
-      // Update quiz with new settings and categories
+      
       const updateData = {
         settings: settingsForm,
         categoryIds: selectedCategories
@@ -167,7 +167,7 @@ const QuizEdit = () => {
       
       await updateQuiz(id, updateData);
       
-      // Update quiz object in state
+      
       const updatedQuiz = {
         ...quiz,
         settings: {
@@ -176,9 +176,9 @@ const QuizEdit = () => {
         }
       };
       
-      // Also update the categories if they were changed
+      
       if (categories.length > 0) {
-        // Convert category IDs to full category objects
+        
         const fullCategories = selectedCategories.map(id => 
           categories.find(cat => cat._id === id)
         ).filter(Boolean);
@@ -228,7 +228,7 @@ const QuizEdit = () => {
     );
   }
   
-  // If quiz is not a draft, redirect to play page
+  
   if (!quiz.isDraft) {
     return (
       <div className="container py-lg">
@@ -349,7 +349,7 @@ const QuizEdit = () => {
         )}
       </div>
       
-      {/* Question Form Modal */}
+      {}
       {showQuestionForm && (
         <Modal
           title="Add Question"
@@ -362,7 +362,7 @@ const QuizEdit = () => {
         </Modal>
       )}
       
-      {/* Settings Modal */}
+      {}
       {showSettingsModal && (
         <Modal
           title="Quiz Settings"

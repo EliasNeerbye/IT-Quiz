@@ -1,4 +1,4 @@
-/* Quiz card grid */
+
 .quiz-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -6,7 +6,7 @@
     margin-top: var(--spacing-lg);
   }
   
-  /* Quiz create/edit styles */
+  
   .image-upload-container {
     display: flex;
     flex-direction: column;
@@ -50,7 +50,7 @@
     margin-top: var(--spacing-lg);
   }
   
-  /* Question form styles */
+  
   .question-form {
     margin-top: var(--spacing-lg);
   }
@@ -91,7 +91,7 @@
     align-self: flex-start;
   }
   
-  /* Question list styles */
+  
   .questions-list {
     margin-top: var(--spacing-lg);
   }
@@ -146,7 +146,7 @@
     font-weight: var(--font-weight-bold);
   }
   
-  /* Quiz play styles */
+  
   .quiz-start-container,
   .quiz-play-container,
   .quiz-results-container {
@@ -252,7 +252,7 @@
     font-size: var(--font-size-lg);
   }
   
-  /* Quiz results styles */
+  
   .results-summary {
     text-align: center;
     padding: var(--spacing-lg);
@@ -333,7 +333,7 @@
     justify-content: center;
   }
   
-  /* Leaderboard styles */
+  
   .leaderboard-container {
     max-width: 900px;
     margin: 0 auto;
@@ -417,7 +417,7 @@
     color: var(--primary);
   }
   
-  /* Responsive styles */
+  
   @media (max-width: 768px) {
     .answer-input-group {
       flex-direction: column;

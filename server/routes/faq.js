@@ -3,10 +3,10 @@ const router = express.Router();
 const faqController = require('../controllers/faq');
 const { isAuthenticated } = require('../middleware/auth');
 
-// Public route (no authentication required)
+
 router.get('/', faqController.getAllFAQs);
 
-// Admin routes (require authentication)
+
 router.use(isAuthenticated);
 
 router.post('/', faqController.addFAQ);

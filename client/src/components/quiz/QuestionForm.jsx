@@ -46,7 +46,7 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
         { text: 'False', isCorrect: false }
       ];
     } else if (formData.type === 'true-false') {
-      // If changing from true-false to multiple-choice, create 4 empty answers
+      
       newAnswers = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
@@ -54,7 +54,7 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
         { text: '', isCorrect: false }
       ];
     } else {
-      // Keep existing answers if not changing from/to true-false
+      
       newAnswers = formData.answers;
     }
 
@@ -69,7 +69,7 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
     const updatedAnswers = [...formData.answers];
     
     if (field === 'isCorrect') {
-      // If selecting this answer as correct, unselect all others
+      
       updatedAnswers.forEach((answer, i) => {
         if (i === index) {
           answer.isCorrect = true;
@@ -142,14 +142,14 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
       return false;
     }
 
-    // Check if at least one answer is marked as correct
+    
     const hasCorrectAnswer = formData.answers.some(answer => answer.isCorrect);
     if (!hasCorrectAnswer) {
       setError('At least one answer must be marked as correct');
       return false;
     }
 
-    // For multiple-choice, check that all answers have text
+    
     if (formData.type === 'multiple-choice') {
       const emptyAnswers = formData.answers.some(answer => !answer.text.trim());
       if (emptyAnswers) {

@@ -1,4 +1,4 @@
-/* Hero section */
+
 .hero {
     background-color: var(--secondary);
     color: white;
@@ -47,7 +47,7 @@
     margin-top: var(--spacing-lg);
   }
   
-  /* Featured quizzes section */
+  
   .featured-quizzes {
     margin-bottom: var(--spacing-xxl);
   }
@@ -73,7 +73,7 @@
     gap: var(--spacing-lg);
   }
   
-  /* Features section */
+  
   .features {
     background-color: var(--background-dark);
     padding: var(--spacing-xxl) 0;
@@ -129,7 +129,7 @@
     color: var(--text-light);
   }
   
-  /* Not found page */
+  
   .not-found-container {
     padding: var(--spacing-xl) 0;
     max-width: 600px;
@@ -161,7 +161,7 @@
     gap: var(--spacing-md);
   }
   
-  /* FAQ page */
+  
   .faq-page {
     max-width: 800px;
     margin: 0 auto;
@@ -227,7 +227,7 @@
     margin-top: var(--spacing-xxl);
   }
   
-  /* Search bar */
+  
   .search-container {
     max-width: 500px;
   }
@@ -256,7 +256,7 @@
     box-shadow: 0 0 0 2px rgba(255, 103, 0, 0.2);
   }
   
-  /* Checkbox label */
+  
   .checkbox-label {
     display: flex;
     align-items: center;
@@ -269,7 +269,7 @@
     width: auto;
   }
   
-  /* Responsive styling */
+  
   @media (max-width: 768px) {
     .hero-buttons {
       flex-direction: column;

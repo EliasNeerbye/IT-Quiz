@@ -25,7 +25,7 @@ const QuizPlay = () => {
   });
   const [answers, setAnswers] = useState([]);
   
-  // Get full image URL
+  
   const getFullImageUrl = (imagePath) => {
     if (!imagePath) return null;
     return imagePath.startsWith('http') 
@@ -33,7 +33,7 @@ const QuizPlay = () => {
       : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imagePath}`;
   };
   
-  // Fetch quiz data
+  
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -51,7 +51,7 @@ const QuizPlay = () => {
     
     fetchQuiz();
     
-    // Cleanup timer on unmount
+    
     return () => {
       if (timer) {
         clearInterval(timer);
@@ -59,22 +59,22 @@ const QuizPlay = () => {
     };
   }, [id, timer]);
   
-  // Start the quiz
+  
   const startQuiz = () => {
     setQuizStarted(true);
     startTimer(quiz.questions[0].time_limit || 60);
   };
   
-  // Start timer for current question
+  
   const startTimer = (seconds) => {
     setTimeLeft(seconds);
     
-    // Clear any existing timer
+    
     if (timer) {
       clearInterval(timer);
     }
     
-    // Set new timer
+    
     const newTimer = setInterval(() => {
       setTimeLeft(prevTime => {
         if (prevTime <= 1) {
@@ -89,9 +89,9 @@ const QuizPlay = () => {
     setTimer(newTimer);
   };
   
-  // Handle when time runs out for a question
+  
   const handleTimeUp = () => {
-    // Record the answer as timeout
+    
     const currentQuestion = quiz.questions[currentQuestionIndex];
     const answerResult = {
       questionId: currentQuestion._id,
@@ -103,7 +103,7 @@ const QuizPlay = () => {
     
     setAnswers([...answers, answerResult]);
     
-    // Move to next question or finish quiz
+    
     if (currentQuestionIndex + 1 < quiz.questions.length) {
       moveToNextQuestion();
     } else {
@@ -111,42 +111,42 @@ const QuizPlay = () => {
     }
   };
   
-  // Handle selecting an answer
+  
   const handleSelectAnswer = (answerId) => {
     setSelectedAnswer(answerId);
   };
   
-  // Submit current answer and move to next question
+  
   const submitAnswer = () => {
     if (selectedAnswer === null) {
       toast.error('Please select an answer');
       return;
     }
     
-    // Clear timer
+    
     if (timer) {
       clearInterval(timer);
     }
     
-    // Calculate score
+    
     const currentQuestion = quiz.questions[currentQuestionIndex];
     const selectedAnswerObj = currentQuestion.answers.find(a => a._id === selectedAnswer);
     const isCorrect = selectedAnswerObj?.isCorrect || false;
     
-    // Calculate points based on time left and max points
+    
     const maxPoints = currentQuestion.max_points || 1000;
     const timeLimit = currentQuestion.time_limit || 60;
-    const timeBonus = timeLeft / timeLimit; // 0-1 based on time left
+    const timeBonus = timeLeft / timeLimit; 
     const earnedPoints = isCorrect ? Math.round(maxPoints * (0.5 + (timeBonus * 0.5))) : 0;
     
-    // Update total score
+    
     setScore(prev => ({
       ...prev,
       points: prev.points + earnedPoints,
       correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers
     }));
     
-    // Record the answer
+    
     const answerResult = {
       questionId: currentQuestion._id,
       answerId: selectedAnswer,
@@ -157,7 +157,7 @@ const QuizPlay = () => {
     
     setAnswers([...answers, answerResult]);
     
-    // Move to next question or finish quiz
+    
     if (currentQuestionIndex + 1 < quiz.questions.length) {
       moveToNextQuestion();
     } else {
@@ -165,22 +165,22 @@ const QuizPlay = () => {
     }
   };
   
-  // Move to next question
+  
   const moveToNextQuestion = () => {
     setSelectedAnswer(null);
     setCurrentQuestionIndex(prev => prev + 1);
     
-    // Start timer for next question
+    
     const nextQuestion = quiz.questions[currentQuestionIndex + 1];
     startTimer(nextQuestion.time_limit || 60);
   };
   
-  // Finish the quiz
+  
   const finishQuiz = async () => {
     setQuizFinished(true);
     
     try {
-      // Submit quiz attempt to server
+      
       await submitQuizAttempt(id, score);
       toast.success('Quiz completed! Your score has been recorded.');
     } catch (err) {
@@ -189,12 +189,12 @@ const QuizPlay = () => {
     }
   };
   
-  // View leaderboard
+  
   const viewLeaderboard = () => {
     navigate(`/quizzes/${id}/leaderboard`);
   };
   
-  // Retry the quiz
+  
   const retryQuiz = () => {
     setQuizStarted(false);
     setQuizFinished(false);
@@ -208,7 +208,7 @@ const QuizPlay = () => {
     setAnswers([]);
   };
   
-  // Format time as MM:SS
+  
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -247,7 +247,7 @@ const QuizPlay = () => {
     );
   }
   
-  // Quiz start screen
+  
   if (!quizStarted) {
     return (
       <div className="container py-lg">
@@ -288,7 +288,7 @@ const QuizPlay = () => {
     );
   }
   
-  // Quiz results screen
+  
   if (quizFinished) {
     const percentage = Math.round((score.correctAnswers / score.totalQuestions) * 100);
     
@@ -394,7 +394,7 @@ const QuizPlay = () => {
     );
   }
   
-  // Playing the quiz
+  
   const currentQuestion = quiz.questions[currentQuestionIndex];
   
   return (

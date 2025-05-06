@@ -1,11 +1,11 @@
 :root {
-    /* Color palette */
-    --primary: #FF6700; /* Dark Orange */
+    
+    --primary: #FF6700; 
     --primary-dark: #E25D00;
     --primary-light: #FF8533;
     --primary-hover: #FF7E33;
     
-    --secondary: #1A1A1A; /* Almost Black */
+    --secondary: #1A1A1A; 
     --secondary-dark: #000000;
     --secondary-light: #333333;
     
@@ -21,7 +21,7 @@
     --warning: #FFA000;
     --info: #1976D2;
     
-    /* Spacing */
+    
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
     --spacing-md: 1rem;
@@ -29,12 +29,12 @@
     --spacing-xl: 2rem;
     --spacing-xxl: 3rem;
     
-    /* Border radius */
+    
     --border-radius-sm: 0.25rem;
     --border-radius-md: 0.5rem;
     --border-radius-lg: 1rem;
     
-    /* Font sizes */
+    
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-md: 1rem;
@@ -42,13 +42,13 @@
     --font-size-xl: 1.5rem;
     --font-size-xxl: 2rem;
     
-    /* Font weights */
+    
     --font-weight-light: 300;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-bold: 700;
     
-    /* Z-index levels */
+    
     --z-index-dropdown: 1000;
     --z-index-sticky: 1020;
     --z-index-fixed: 1030;
@@ -56,17 +56,17 @@
     --z-index-modal: 1050;
     --z-index-tooltip: 1060;
     
-    /* Box shadows */
+    
     --box-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --box-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --box-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     
-    /* Transitions */
+    
     --transition-fast: 150ms ease-in-out;
     --transition-normal: 300ms ease-in-out;
     --transition-slow: 500ms ease-in-out;
     
-    /* Container widths */
+    
     --container-width-sm: 540px;
     --container-width-md: 720px;
     --container-width-lg: 960px;

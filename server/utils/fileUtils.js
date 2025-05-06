@@ -2,19 +2,14 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
-// Get the base URL for uploads from environment variable or default to /uploads
+
 const UPLOAD_BASE_URL = process.env.UPLOAD_BASE_URL || 'http://localhost:5000/uploads';
 
-/**
- * Handle file upload for images
- * @param {Object} file - The file object from express-fileupload
- * @param {string} prefix - Optional prefix for the filename
- * @returns {string|null} - The path to the saved file or null if failed
- */
+
 exports.handleImageUpload = async (file, prefix = '') => {
     if (!file) return null;
     
-    // Validate file type
+    
     if (!file.mimetype.startsWith('image/')) {
         throw new Error('File must be an image');
     }
@@ -24,20 +19,17 @@ exports.handleImageUpload = async (file, prefix = '') => {
     const uploadDir = path.join(__dirname, '../uploads');
     const uploadPath = path.join(uploadDir, fileName);
     
-    // Ensure upload directory exists
+    
     fs.mkdirSync(uploadDir, { recursive: true });
     
-    // Save the file
+    
     await file.mv(uploadPath);
     
-    // Return the full URL to the uploaded file
+    
     return `${UPLOAD_BASE_URL}/${fileName}`;
 };
 
-/**
- * Delete a file
- * @param {string} filePath - Path to the file, relative to the server root
- */
+
 exports.deleteFile = (filePath) => {
     if (!filePath) return;
     

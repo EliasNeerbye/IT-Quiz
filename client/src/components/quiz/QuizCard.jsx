@@ -3,13 +3,13 @@ import { FaUser, FaQuestion, FaTrophy, FaCalendarAlt, FaEdit, FaTrash } from 're
 import Button from '../common/Button';
 
 const QuizCard = ({ quiz, onDelete, showActions = true }) => {
-  // Default image if none is provided
+  
   const imageUrl = quiz.image || '/assets/default-quiz.jpg';
   const fullImageUrl = imageUrl.startsWith('http') 
     ? imageUrl 
     : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imageUrl}`;
 
-  // Format date
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {

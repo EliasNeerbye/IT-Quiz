@@ -11,28 +11,28 @@ const MultiplayerGame = () => {
   const [timer, setTimer] = useState(null);
   const [answered, setAnswered] = useState(false);
   
-  // Handle time updates for current question
+  
   useEffect(() => {
     if (gameState.currentQuestion) {
-      // Reset state for new question
+      
       setSelectedAnswer(null);
       setAnswered(false);
       
-      // Set time limit based on question
+      
       const timeLimit = gameState.currentQuestion.time_limit || 60;
       setTimeLeft(timeLimit);
       
-      // Clear previous timer
+      
       if (timer) {
         clearInterval(timer);
       }
       
-      // Start new timer
+      
       const newTimer = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(newTimer);
-            // Auto-submit if no answer selected
+            
             if (!answered) {
               handleSubmitAnswer(null);
             }
@@ -44,7 +44,7 @@ const MultiplayerGame = () => {
       
       setTimer(newTimer);
       
-      // Cleanup timer on component unmount or question change
+      
       return () => {
         if (timer) {
           clearInterval(timer);
@@ -53,7 +53,7 @@ const MultiplayerGame = () => {
     }
   }, [gameState.currentQuestion]);
   
-  // Handle cleanup on component unmount
+  
   useEffect(() => {
     return () => {
       if (timer) {
@@ -62,25 +62,25 @@ const MultiplayerGame = () => {
     };
   }, []);
   
-  // Handle selecting an answer
+  
   const handleSelectAnswer = (answerId) => {
     setSelectedAnswer(answerId);
   };
   
-  // Handle submitting an answer
+  
   const handleSubmitAnswer = (answerId) => {
-    // Use selected answer if none provided
+    
     const finalAnswerId = answerId !== null ? answerId : selectedAnswer;
     
-    // Clear timer
+    
     if (timer) {
       clearInterval(timer);
     }
     
-    // Mark as answered to prevent auto-submit
+    
     setAnswered(true);
     
-    // Submit answer to server
+    
     if (gameState.gameCode && gameState.currentQuestion) {
       submitAnswer(
         gameState.gameCode,
@@ -90,14 +90,14 @@ const MultiplayerGame = () => {
     }
   };
   
-  // Format time as MM:SS
+  
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
   
-  // Handle leaving the game
+  
   const handleLeaveGame = () => {
     if (window.confirm('Are you sure you want to leave this game?')) {
       leaveGame(gameState.gameCode);
@@ -105,7 +105,7 @@ const MultiplayerGame = () => {
     }
   };
   
-  // Show game results if game is over
+  
   if (gameState.gameOver) {
     return (
       <div className="game-results">
@@ -138,7 +138,7 @@ const MultiplayerGame = () => {
     );
   }
   
-  // Show question results between questions
+  
   if (gameState.questionResults) {
     return (
       <div className="question-results">
@@ -173,7 +173,7 @@ const MultiplayerGame = () => {
     );
   }
   
-  // Show current question
+  
   if (gameState.currentQuestion) {
     return (
       <div className="multiplayer-question">
@@ -250,7 +250,7 @@ const MultiplayerGame = () => {
     );
   }
   
-  // Fallback if no question or results available
+  
   return (
     <div className="game-loading">
       <div className="loader-container">

@@ -1,4 +1,4 @@
-/* Auth form container */
+
 .auth-form-container {
     display: flex;
     justify-content: center;
@@ -34,7 +34,7 @@
     margin-top: var(--spacing-lg);
   }
   
-  /* Profile page styles */
+  
   .profile-container {
     max-width: 800px;
     margin: 0 auto;
@@ -90,7 +90,7 @@
     background-color: rgba(211, 47, 47, 0.05);
   }
   
-  /* Responsive styles */
+  
   @media (max-width: 576px) {
     .auth-form-card {
       padding: var(--spacing-md);

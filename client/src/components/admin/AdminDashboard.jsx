@@ -16,19 +16,19 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       setLoading(true);
       try {
-        // Get users count
+        
         const usersResponse = await api.get('/admin/users');
         const users = usersResponse.data.users?.length || 0;
         
-        // Get quizzes count
+        
         const quizzesResponse = await api.get('/admin/quizzes');
         const quizzes = quizzesResponse.data.quizzes?.length || 0;
         
-        // Get categories count
+        
         const categoriesResponse = await api.get('/quiz/categories');
         const categories = categoriesResponse.data.categories?.length || 0;
         
-        // Get FAQ count
+        
         const faqResponse = await api.get('/faq');
         const faqs = faqResponse.data.faqs?.length || 0;
         

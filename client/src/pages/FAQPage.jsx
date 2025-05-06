@@ -8,7 +8,7 @@ const FAQPage = () => {
   const [error, setError] = useState(null);
   const [openItem, setOpenItem] = useState(null);
   
-  // Fetch FAQs
+  
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
@@ -16,7 +16,7 @@ const FAQPage = () => {
         const response = await api.get('/faq');
         setFaqs(response.data.faqs || []);
         
-        // Open the first FAQ by default
+        
         if (response.data.faqs && response.data.faqs.length > 0) {
           setOpenItem(response.data.faqs[0]._id);
         }
@@ -31,7 +31,7 @@ const FAQPage = () => {
     fetchFaqs();
   }, []);
   
-  // Toggle FAQ item
+  
   const toggleItem = (id) => {
     setOpenItem(openItem === id ? null : id);
   };

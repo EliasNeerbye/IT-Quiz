@@ -53,16 +53,16 @@ app.use(session({
     }
 }));
 
-// Serve static files from uploads directory
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Register routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/faq', faqRoutes);
 
-// Error handling middleware
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Something broke!' });

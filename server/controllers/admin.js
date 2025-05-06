@@ -4,7 +4,7 @@ const Question = require('../models/Question');
 const Settings = require('../models/Settings');
 const fileUtils = require('../utils/fileUtils');
 
-// Get all users
+
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find({}, '-password');
@@ -15,7 +15,7 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Delete user by ID (admin only)
+
 exports.deleteUser = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -29,7 +29,7 @@ exports.deleteUser = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         
-        // Don't allow admins to delete themselves through this route
+        
         if (user._id.toString() === req.userId.toString()) {
             return res.status(400).json({ error: 'Use the account deletion route to delete your own account' });
         }
@@ -43,7 +43,7 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// Delete quiz by ID (admin only)
+
 exports.deleteQuiz = async (req, res) => {
     try {
         const { quizId } = req.params;
@@ -52,19 +52,19 @@ exports.deleteQuiz = async (req, res) => {
             return res.status(400).json({ error: 'Quiz ID is required' });
         }
         
-        // Find the quiz with its questions
+        
         const quiz = await Quiz.findById(quizId).populate('questions');
         
         if (!quiz) {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        // Delete quiz image if exists
+        
         if (quiz.image) {
             fileUtils.deleteFile(quiz.image);
         }
         
-        // Delete all questions and their images
+        
         for (const question of quiz.questions) {
             if (question.image) {
                 fileUtils.deleteFile(question.image);
@@ -72,15 +72,15 @@ exports.deleteQuiz = async (req, res) => {
             await Question.findByIdAndDelete(question._id);
         }
         
-        // Delete the settings
+        
         if (quiz.settings) {
             await Settings.findByIdAndDelete(quiz.settings);
         }
         
-        // Delete the quiz
+        
         await Quiz.findByIdAndDelete(quizId);
         
-        // Remove from creator's quizzes array if creator exists
+        
         if (quiz.creator) {
             await User.findByIdAndUpdate(quiz.creator, {
                 $pull: { quizzes: quizId }
@@ -94,7 +94,7 @@ exports.deleteQuiz = async (req, res) => {
     }
 };
 
-// Get all quizzes (admin only)
+
 exports.getAllQuizzes = async (req, res) => {
     try {
         const quizzes = await Quiz.find()

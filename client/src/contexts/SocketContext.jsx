@@ -2,10 +2,10 @@ import { createContext, useState, useEffect, useContext } from 'react';
 import { initSocket, disconnectSocket } from '../services/socket';
 import { AuthContext } from './AuthContext';
 
-// Create the context
+
 export const SocketContext = createContext();
 
-// Create provider component
+
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
@@ -22,7 +22,7 @@ export const SocketProvider = ({ children }) => {
   
   const { user } = useContext(AuthContext);
   
-  // Initialize socket connection
+  
   useEffect(() => {
     if (user) {
       const socketInstance = initSocket();
@@ -35,7 +35,7 @@ export const SocketProvider = ({ children }) => {
         setConnected(false);
       });
       
-      // Game events
+      
       socketInstance.on('player_joined', (data) => {
         setGameState(prev => ({
           ...prev,
@@ -125,7 +125,7 @@ export const SocketProvider = ({ children }) => {
       
       setSocket(socketInstance);
       
-      // Clean up on unmount
+      
       return () => {
         disconnectSocket();
         setSocket(null);
@@ -134,7 +134,7 @@ export const SocketProvider = ({ children }) => {
     }
   }, [user]);
   
-  // Set up game state when creating or joining a game
+  
   const setUpGame = (gameData, isHost = false) => {
     setGameState({
       inGame: true,
@@ -151,7 +151,7 @@ export const SocketProvider = ({ children }) => {
     });
   };
   
-  // Reset game state
+  
   const resetGame = () => {
     setGameState({
       inGame: false,
@@ -165,7 +165,7 @@ export const SocketProvider = ({ children }) => {
     });
   };
   
-  // Create the context value
+  
   const value = {
     socket,
     connected,

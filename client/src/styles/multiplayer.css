@@ -1,4 +1,4 @@
-/* Multiplayer page styles */
+
 .multiplayer-options {
     max-width: 800px;
     margin: 0 auto;
@@ -38,7 +38,7 @@
     padding: var(--spacing-lg);
   }
   
-  /* Multiplayer info */
+  
   .multiplayer-info {
     margin-top: var(--spacing-xl);
   }
@@ -57,7 +57,7 @@
     padding-bottom: var(--spacing-xs);
   }
   
-  /* Host game styles */
+  
   .host-game-container,
   .join-game-container {
     padding: var(--spacing-md);
@@ -89,7 +89,7 @@
     margin-bottom: var(--spacing-sm);
   }
   
-  /* Game lobby styles */
+  
   .game-lobby {
     max-width: 800px;
     margin: 0 auto;
@@ -194,7 +194,7 @@
     margin-top: var(--spacing-lg);
   }
   
-  /* Multiplayer game styles */
+  
   .multiplayer-question {
     max-width: 800px;
     margin: 0 auto;
@@ -233,7 +233,7 @@
     color: var(--text-light);
   }
   
-  /* Question results styles */
+  
   .question-results,
   .game-results {
     max-width: 800px;
@@ -296,7 +296,7 @@
     padding: var(--spacing-xl);
   }
   
-  /* Responsive styles */
+  
   @media (max-width: 768px) {
     .lobby-header {
       flex-direction: column;

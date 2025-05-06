@@ -18,14 +18,14 @@ const HostGame = () => {
   const { user } = useContext(AuthContext);
   const { gameState, setUpGame } = useContext(SocketContext);
   
-  // Fetch user's published quizzes
+  
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
         setLoading(true);
         const response = await getUserQuizzes();
         
-        // Filter out draft quizzes
+        
         const publishedQuizzes = response.quizzes.filter(quiz => !quiz.isDraft);
         setQuizzes(publishedQuizzes);
         
@@ -43,7 +43,7 @@ const HostGame = () => {
     fetchQuizzes();
   }, []);
   
-  // Handle hosting a game
+  
   const handleHostGame = async () => {
     if (!selectedQuiz) {
       setError('Please select a quiz to host');
@@ -53,10 +53,10 @@ const HostGame = () => {
     try {
       setCreatingGame(true);
       
-      // Create a new game
+      
       const gameData = await createGame(selectedQuiz, user.id);
       
-      // Set up game state
+      
       setUpGame(gameData, true);
     } catch (err) {
       console.error('Failed to create game:', err);
@@ -66,14 +66,14 @@ const HostGame = () => {
     }
   };
   
-  // Handle starting the game
+  
   const handleStartGame = () => {
     if (gameState.gameCode) {
       startGame(gameState.gameCode);
     }
   };
   
-  // If in a game, show game component
+  
   if (gameState.inGame) {
     if (gameState.inProgress) {
       return <MultiplayerGame />;
@@ -88,7 +88,7 @@ const HostGame = () => {
     );
   }
   
-  // If no published quizzes, show message
+  
   if (!loading && quizzes.length === 0) {
     return (
       <div className="empty-quizzes-container">
