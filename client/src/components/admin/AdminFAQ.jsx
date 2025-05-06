@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import api from '../../services/api';
 import Button from '../common/Button';
 import Modal from '../common/Modal';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaQuestionCircle } from 'react-icons/fa';
 
 const AdminFAQ = () => {
   const [faqs, setFaqs] = useState([]);
@@ -17,7 +17,6 @@ const AdminFAQ = () => {
     order: 0
   });
   
-  // Fetch all FAQs
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
@@ -35,7 +34,6 @@ const AdminFAQ = () => {
     fetchFaqs();
   }, []);
   
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -44,7 +42,6 @@ const AdminFAQ = () => {
     });
   };
   
-  // Open modal for adding new FAQ
   const handleAddFaq = () => {
     setEditingFaq(null);
     setFormData({
@@ -55,7 +52,6 @@ const AdminFAQ = () => {
     setShowModal(true);
   };
   
-  // Open modal for editing FAQ
   const handleEditFaq = (faq) => {
     setEditingFaq(faq);
     setFormData({
@@ -66,7 +62,6 @@ const AdminFAQ = () => {
     setShowModal(true);
   };
   
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -79,10 +74,8 @@ const AdminFAQ = () => {
       let response;
       
       if (editingFaq) {
-        // Update existing FAQ
         response = await api.put(`/faq/${editingFaq._id}`, formData);
         
-        // Update FAQs list
         setFaqs(prevFaqs => 
           prevFaqs.map(faq => 
             faq._id === editingFaq._id ? response.data.faq : faq
@@ -91,16 +84,13 @@ const AdminFAQ = () => {
         
         toast.success('FAQ updated successfully');
       } else {
-        // Add new FAQ
         response = await api.post('/faq', formData);
         
-        // Update FAQs list
         setFaqs(prevFaqs => [...prevFaqs, response.data.faq]);
         
         toast.success('FAQ added successfully');
       }
       
-      // Close modal and reset form
       setShowModal(false);
       setEditingFaq(null);
       setFormData({
@@ -114,7 +104,6 @@ const AdminFAQ = () => {
     }
   };
   
-  // Handle FAQ deletion
   const handleDeleteFaq = async (faqId) => {
     if (!window.confirm('Are you sure you want to delete this FAQ?')) {
       return;
@@ -123,7 +112,6 @@ const AdminFAQ = () => {
     try {
       await api.delete(`/faq/${faqId}`);
       
-      // Update FAQs list
       setFaqs(prevFaqs => prevFaqs.filter(faq => faq._id !== faqId));
       
       toast.success('FAQ deleted successfully');
@@ -142,9 +130,7 @@ const AdminFAQ = () => {
   }
   
   if (error) {
-    return (
-      <div className="alert alert-danger">{error}</div>
-    );
+    return <div className="alert alert-danger">{error}</div>;
   }
   
   return (
@@ -158,7 +144,8 @@ const AdminFAQ = () => {
       </div>
       
       {faqs.length === 0 ? (
-        <div className="empty-state card text-center py-lg">
+        <div className="empty-state">
+          <FaQuestionCircle size={48} />
           <h3>No FAQs Found</h3>
           <p>Start adding frequently asked questions to help your users.</p>
           <Button variant="primary" onClick={handleAddFaq}>
@@ -166,42 +153,49 @@ const AdminFAQ = () => {
           </Button>
         </div>
       ) : (
-        <div className="faq-list">
-          {faqs.map((faq) => (
-            <div key={faq._id} className="faq-item">
-              <div className="faq-header">
-                <h3 className="faq-title">{faq.question}</h3>
-                <div className="faq-actions">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleEditFaq(faq)}
-                    aria-label="Edit FAQ"
-                  >
-                    <FaEdit />
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteFaq(faq._id)}
-                    aria-label="Delete FAQ"
-                  >
-                    <FaTrash />
-                  </Button>
-                </div>
-              </div>
-              <div className="faq-content">
-                <p>{faq.answer}</p>
-                <div className="faq-meta">
-                  <small>Order: {faq.order}</small>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th style={{ width: '50px' }}>Order</th>
+                <th>Question</th>
+                <th>Answer</th>
+                <th style={{ width: '120px' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {faqs.map((faq) => (
+                <tr key={faq._id}>
+                  <td>{faq.order}</td>
+                  <td>{faq.question}</td>
+                  <td>{faq.answer.length > 100 ? `${faq.answer.substring(0, 100)}...` : faq.answer}</td>
+                  <td>
+                    <div className="data-table-actions">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleEditFaq(faq)}
+                        aria-label="Edit FAQ"
+                      >
+                        <FaEdit />
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteFaq(faq._id)}
+                        aria-label="Delete FAQ"
+                      >
+                        <FaTrash />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
       
-      {/* FAQ Form Modal */}
       {showModal && (
         <Modal
           title={editingFaq ? 'Edit FAQ' : 'Add FAQ'}

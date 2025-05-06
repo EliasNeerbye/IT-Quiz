@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import api from '../../services/api';
 import Button from '../common/Button';
 import Modal from '../common/Modal';
-import { FaPlus, FaEdit, FaTrash, FaFolder } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaFolder } from 'react-icons/fa';
 
 const AdminCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -15,7 +15,6 @@ const AdminCategories = () => {
     description: ''
   });
   
-  // Fetch all categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -33,7 +32,6 @@ const AdminCategories = () => {
     fetchCategories();
   }, []);
   
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -42,7 +40,6 @@ const AdminCategories = () => {
     });
   };
   
-  // Open modal for adding new category
   const handleAddCategory = () => {
     setFormData({
       name: '',
@@ -51,7 +48,6 @@ const AdminCategories = () => {
     setShowModal(true);
   };
   
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -61,15 +57,12 @@ const AdminCategories = () => {
     }
     
     try {
-      // Create new category
       const response = await api.post('/quiz/categories', formData);
       
-      // Update categories list
       setCategories(prevCategories => [...prevCategories, response.data.category]);
       
       toast.success('Category added successfully');
       
-      // Close modal and reset form
       setShowModal(false);
       setFormData({
         name: '',
@@ -81,6 +74,15 @@ const AdminCategories = () => {
     }
   };
   
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+  
   if (loading) {
     return (
       <div className="loader-container">
@@ -90,9 +92,7 @@ const AdminCategories = () => {
   }
   
   if (error) {
-    return (
-      <div className="alert alert-danger">{error}</div>
-    );
+    return <div className="alert alert-danger">{error}</div>;
   }
   
   return (
@@ -106,8 +106,8 @@ const AdminCategories = () => {
       </div>
       
       {categories.length === 0 ? (
-        <div className="empty-state card text-center py-lg">
-          <FaFolder size={48} className="text-light mb-md" />
+        <div className="empty-state">
+          <FaFolder size={48} />
           <h3>No Categories Found</h3>
           <p>Start adding categories to organize your quizzes.</p>
           <Button variant="primary" onClick={handleAddCategory}>
@@ -131,11 +131,7 @@ const AdminCategories = () => {
                   <td>{category.name}</td>
                   <td>{category.description || '-'}</td>
                   <td>
-                    {new Date(category.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
+                    {formatDate(category.createdAt)}
                   </td>
                   <td>
                     <div className="data-table-actions">
@@ -156,7 +152,6 @@ const AdminCategories = () => {
         </div>
       )}
       
-      {/* Category Form Modal */}
       {showModal && (
         <Modal
           title="Add Category"

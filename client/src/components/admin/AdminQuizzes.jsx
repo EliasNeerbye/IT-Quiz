@@ -12,7 +12,6 @@ const AdminQuizzes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredQuizzes, setFilteredQuizzes] = useState([]);
   
-  // Fetch all quizzes
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -31,7 +30,6 @@ const AdminQuizzes = () => {
     fetchQuizzes();
   }, []);
   
-  // Filter quizzes based on search term
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setFilteredQuizzes(quizzes);
@@ -39,13 +37,12 @@ const AdminQuizzes = () => {
       const filtered = quizzes.filter(quiz => 
         quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         quiz.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quiz.creator.username.toLowerCase().includes(searchTerm.toLowerCase())
+        quiz.creator?.username.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredQuizzes(filtered);
     }
   }, [searchTerm, quizzes]);
   
-  // Handle quiz deletion
   const handleDeleteQuiz = async (quizId, title) => {
     if (!window.confirm(`Are you sure you want to delete the quiz "${title}"? This action cannot be undone.`)) {
       return;
@@ -54,7 +51,6 @@ const AdminQuizzes = () => {
     try {
       await api.delete(`/admin/quizzes/${quizId}`);
       
-      // Update quizzes list
       setQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz._id !== quizId));
       toast.success(`Quiz "${title}" deleted successfully`);
     } catch (err) {
@@ -63,7 +59,6 @@ const AdminQuizzes = () => {
     }
   };
   
-  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -82,9 +77,7 @@ const AdminQuizzes = () => {
   }
   
   if (error) {
-    return (
-      <div className="alert alert-danger">{error}</div>
-    );
+    return <div className="alert alert-danger">{error}</div>;
   }
   
   return (
@@ -108,8 +101,8 @@ const AdminQuizzes = () => {
       
       <div className="data-table-container">
         {filteredQuizzes.length === 0 ? (
-          <div className="empty-state text-center py-lg">
-            <FaListAlt size={48} className="text-light mb-md" />
+          <div className="empty-state">
+            <FaListAlt size={48} />
             <h3>No Quizzes Found</h3>
             <p>
               {searchTerm ? 'No quizzes match your search criteria.' : 'There are no quizzes in the system yet.'}

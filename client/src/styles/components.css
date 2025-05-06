@@ -206,10 +206,12 @@
     background-color: white;
     border-radius: var(--border-radius-md);
     box-shadow: var(--box-shadow-lg);
-    width: 90%;
-    max-width: 500px;
+    width: 95%;
+    max-width: 800px;
     z-index: var(--z-index-modal);
     animation: fadeIn var(--transition-normal);
+    max-height: 90vh;
+    overflow-y: auto;
   }
   
   .modal-header {
@@ -248,6 +250,23 @@
     display: flex;
     justify-content: flex-end;
     gap: var(--spacing-md);
+  }
+  
+  /* Question form specific modal styles */
+  .question-form .answers-container {
+    max-width: 100%;
+  }
+
+  .question-form .answer-input-group {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--spacing-md);
+    align-items: center;
+  }
+
+  .image-preview {
+    max-width: 100%;
+    height: auto;
   }
   
   /* Loader Component */
@@ -386,5 +405,19 @@
       left: 0;
       background-color: var(--secondary);
       padding: var(--spacing-md);
+    }
+
+    .modal {
+      width: 95%;
+      padding: var(--spacing-sm);
+    }
+    
+    .question-form .answer-input-group {
+      grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+      gap: var(--spacing-sm);
     }
   }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
 import Button from '../common/Button';
-import { FaTrash, FaUserAlt, FaSearch } from 'react-icons/fa';
+import { FaTrash, FaSearch, FaUserAlt } from 'react-icons/fa';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -11,7 +11,6 @@ const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   
-  // Fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -30,7 +29,6 @@ const AdminUsers = () => {
     fetchUsers();
   }, []);
   
-  // Filter users based on search term
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setFilteredUsers(users);
@@ -43,7 +41,6 @@ const AdminUsers = () => {
     }
   }, [searchTerm, users]);
   
-  // Handle user deletion
   const handleDeleteUser = async (userId, username) => {
     if (!window.confirm(`Are you sure you want to delete the user "${username}"? This action cannot be undone.`)) {
       return;
@@ -52,7 +49,6 @@ const AdminUsers = () => {
     try {
       await api.delete(`/admin/users/${userId}`);
       
-      // Update users list
       setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
       toast.success(`User "${username}" deleted successfully`);
     } catch (err) {
@@ -61,7 +57,6 @@ const AdminUsers = () => {
     }
   };
   
-  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -80,9 +75,7 @@ const AdminUsers = () => {
   }
   
   if (error) {
-    return (
-      <div className="alert alert-danger">{error}</div>
-    );
+    return <div className="alert alert-danger">{error}</div>;
   }
   
   return (
@@ -106,8 +99,8 @@ const AdminUsers = () => {
       
       <div className="data-table-container">
         {filteredUsers.length === 0 ? (
-          <div className="empty-state text-center py-lg">
-            <FaUserAlt size={48} className="text-light mb-md" />
+          <div className="empty-state">
+            <FaUserAlt size={48} />
             <h3>No Users Found</h3>
             <p>
               {searchTerm ? 'No users match your search criteria.' : 'There are no users in the system yet.'}
