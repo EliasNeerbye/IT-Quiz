@@ -1,0 +1,320 @@
+/* Multiplayer page styles */
+.multiplayer-options {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .tabs {
+    display: flex;
+    margin-bottom: var(--spacing-lg);
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .tab {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-light);
+    transition: var(--transition-fast);
+    border-bottom: 3px solid transparent;
+  }
+  
+  .tab:hover {
+    color: var(--primary);
+  }
+  
+  .tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  
+  .tab-content {
+    background-color: white;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--box-shadow-md);
+    padding: var(--spacing-lg);
+  }
+  
+  /* Multiplayer info */
+  .multiplayer-info {
+    margin-top: var(--spacing-xl);
+  }
+  
+  .multiplayer-instructions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+  }
+  
+  .instruction-section h3 {
+    color: var(--primary);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: var(--spacing-xs);
+  }
+  
+  /* Host game styles */
+  .host-game-container,
+  .join-game-container {
+    padding: var(--spacing-md);
+  }
+  
+  .empty-quizzes-container {
+    text-align: center;
+    padding: var(--spacing-lg);
+  }
+  
+  .host-form,
+  .join-form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .host-instructions,
+  .join-instructions {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-md);
+    background-color: #f9f9f9;
+    border-radius: var(--border-radius-sm);
+    border-left: 3px solid var(--primary);
+  }
+  
+  .host-instructions h3,
+  .join-instructions h3 {
+    color: var(--primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  /* Game lobby styles */
+  .game-lobby {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .lobby-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+  
+  .game-code-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background-color: #f9f9f9;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    border: 1px dashed var(--primary);
+  }
+  
+  .game-code {
+    font-weight: var(--font-weight-medium);
+  }
+  
+  .code {
+    font-weight: var(--font-weight-bold);
+    color: var(--primary);
+    font-size: var(--font-size-lg);
+    letter-spacing: 2px;
+  }
+  
+  .lobby-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .players-list {
+    padding: var(--spacing-md);
+  }
+  
+  .players {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .player-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .player-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: var(--secondary);
+    color: white;
+    border-radius: 50%;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .player-name {
+    flex-grow: 1;
+  }
+  
+  .host-badge {
+    background-color: var(--primary);
+    color: white;
+    font-size: var(--font-size-xs);
+    padding: 2px 6px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .empty-players {
+    color: var(--text-light);
+    text-align: center;
+    padding: var(--spacing-md);
+  }
+  
+  .lobby-info {
+    padding: var(--spacing-md);
+  }
+  
+  .lobby-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+  }
+  
+  /* Multiplayer game styles */
+  .multiplayer-question {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .question-container {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .answer-feedback {
+    text-align: center;
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .answer-feedback.correct {
+    background-color: rgba(56, 142, 60, 0.1);
+    color: var(--success);
+  }
+  
+  .answer-feedback.incorrect {
+    background-color: rgba(211, 47, 47, 0.1);
+    color: var(--danger);
+  }
+  
+  .game-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-lg);
+  }
+  
+  .players-info {
+    color: var(--text-light);
+  }
+  
+  /* Question results styles */
+  .question-results,
+  .game-results {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .results-container {
+    margin-top: var(--spacing-lg);
+  }
+  
+  .standings {
+    padding: var(--spacing-lg);
+  }
+  
+  .standings-list {
+    margin-top: var(--spacing-md);
+  }
+  
+  .player-result {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .player-result:last-child {
+    border-bottom: none;
+  }
+  
+  .player-result.winner {
+    background-color: rgba(255, 215, 0, 0.1);
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .player-rank {
+    width: 30px;
+    text-align: center;
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .player-score {
+    margin-left: auto;
+    font-weight: var(--font-weight-bold);
+    color: var(--primary);
+  }
+  
+  .player-answer-result {
+    width: 30px;
+    text-align: center;
+  }
+  
+  .final-standings {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .game-loading {
+    text-align: center;
+    padding: var(--spacing-xl);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .lobby-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .game-code-container {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .player-result {
+      flex-wrap: wrap;
+    }
+    
+    .player-accuracy {
+      width: 100%;
+      margin-left: 30px;
+      margin-top: var(--spacing-xs);
+    }
+  }

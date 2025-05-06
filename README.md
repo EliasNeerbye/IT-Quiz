@@ -1,3 +1,3 @@
-# IT-Quiz
+# IT - Quiz
 
-UGC quiz website
+Bad website made with vibe-coding cuz I'm tired of websites
