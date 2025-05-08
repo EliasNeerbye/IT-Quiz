@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Button from '../common/Button';
 import { FaSave, FaTrash, FaPlus, FaImage, FaTimes } from 'react-icons/fa';
 
-const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
+const QuestionForm = ({ onSubmit, onCancel, initialData = {}, defaultTimeLimit = 60 }) => {
   const defaultAnswers = initialData.type === 'true-false' 
     ? [
         { text: 'True', isCorrect: false },
@@ -20,7 +20,7 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
     text: initialData.text || '',
     type: initialData.type || 'multiple-choice',
     answers: initialData.answers || defaultAnswers,
-    time_limit: initialData.time_limit || 60,
+    time_limit: initialData.time_limit || defaultTimeLimit,
     max_points: initialData.max_points || 1000,
     image: null
   });
@@ -46,7 +46,6 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
         { text: 'False', isCorrect: false }
       ];
     } else if (formData.type === 'true-false') {
-      
       newAnswers = [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
@@ -54,7 +53,6 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
         { text: '', isCorrect: false }
       ];
     } else {
-      
       newAnswers = formData.answers;
     }
 
@@ -69,7 +67,6 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
     const updatedAnswers = [...formData.answers];
     
     if (field === 'isCorrect') {
-      
       updatedAnswers.forEach((answer, i) => {
         if (i === index) {
           answer.isCorrect = true;
@@ -142,14 +139,12 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
       return false;
     }
 
-    
     const hasCorrectAnswer = formData.answers.some(answer => answer.isCorrect);
     if (!hasCorrectAnswer) {
       setError('At least one answer must be marked as correct');
       return false;
     }
 
-    
     if (formData.type === 'multiple-choice') {
       const emptyAnswers = formData.answers.some(answer => !answer.text.trim());
       if (emptyAnswers) {
@@ -268,7 +263,9 @@ const QuestionForm = ({ onSubmit, onCancel, initialData = {} }) => {
             {(previewImage || formData.image) && (
               <div className="image-preview-container">
                 <img
-                  src={previewImage || (formData.image?.startsWith('http') ? formData.image : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${formData.image}`)}
+                  src={previewImage || (typeof formData.image === 'string' && formData.image.startsWith('http') 
+                      ? formData.image 
+                      : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${formData.image}`)}
                   alt="Preview"
                   className="image-preview"
                 />

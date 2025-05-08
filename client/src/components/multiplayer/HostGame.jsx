@@ -26,7 +26,7 @@ const HostGame = () => {
         const response = await getUserQuizzes();
         
         
-        const publishedQuizzes = response.quizzes.filter(quiz => !quiz.isDraft);
+        const publishedQuizzes = response.quizzes.filter(quiz => !quiz.isDraft && quiz.settings.multiplayer);
         setQuizzes(publishedQuizzes);
         
         if (publishedQuizzes.length > 0) {

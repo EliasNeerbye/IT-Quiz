@@ -373,6 +373,7 @@ const QuizEdit = () => {
           <QuestionForm
             onSubmit={handleQuestionSubmit}
             onCancel={() => setShowQuestionForm(false)}
+            defaultTimeLimit={quiz.settings?.default_time_limit || 60}
           />
         </Modal>
       )}
