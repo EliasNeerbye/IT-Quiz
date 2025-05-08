@@ -164,8 +164,8 @@ exports.createQuiz = async (req, res) => {
 exports.updateQuiz = async (req, res) => {
     try {
         const { quizId } = req.params;
-        const { title, description, categoryIds, settings } = req.body;
-        
+        // Get data from request body or use defaults
+        const { title, description, categoryIds, settings } = req.body || {};
         
         const quiz = await Quiz.findById(quizId);
         
@@ -173,24 +173,19 @@ exports.updateQuiz = async (req, res) => {
             return res.status(404).json({ error: 'Quiz not found' });
         }
         
-        
         if (quiz.creator.toString() !== req.userId.toString()) {
             return res.status(403).json({ error: 'You can only edit your own quizzes' });
         }
-        
         
         if (!quiz.isDraft) {
             return res.status(400).json({ error: 'Published quizzes cannot be edited' });
         }
         
-        
         if (req.files && req.files.image) {
             try {
-                
                 if (quiz.image) {
                     fileUtils.deleteFile(quiz.image);
                 }
-                
                 
                 const imagePath = await fileUtils.handleImageUpload(req.files.image, 'quiz_');
                 quiz.image = imagePath;
@@ -199,28 +194,126 @@ exports.updateQuiz = async (req, res) => {
             }
         }
         
+        // Only update properties if they are provided
+        if (title !== undefined) quiz.title = title;
+        if (description !== undefined) quiz.description = description;
         
-        if (title) quiz.title = title;
-        if (description) quiz.description = description;
-        if (categoryIds) quiz.category = categoryIds;
+        // Special handling for categoryIds
+        if (categoryIds !== undefined) {
+            // Handle empty array case properly
+            if (categoryIds === '[]' || 
+                (Array.isArray(categoryIds) && categoryIds.length === 0) ||
+                (typeof categoryIds === 'string' && categoryIds.trim() === '[]')) {
+                quiz.category = [];
+            } else {
+                quiz.category = categoryIds;
+            }
+        }
         
         await quiz.save();
         
-        
-        if (settings) {
-            await Settings.findByIdAndUpdate(quiz.settings, settings);
+        // Improved settings update logic
+        if (settings && quiz.settings) {
+            let settingsData = settings;
+            
+            // Parse settings if it's a string
+            if (typeof settings === 'string') {
+                try {
+                    settingsData = JSON.parse(settings);
+                } catch (e) {
+                    return res.status(400).json({ error: 'Invalid settings format' });
+                }
+            }
+            
+            // Create a clean update object with only valid fields
+            const settingsUpdate = {};
+            if (settingsData.private !== undefined) settingsUpdate.private = Boolean(settingsData.private);
+            if (settingsData.multiplayer !== undefined) settingsUpdate.multiplayer = Boolean(settingsData.multiplayer);
+            if (settingsData.default_time_limit !== undefined) {
+                settingsUpdate.default_time_limit = Number(settingsData.default_time_limit);
+            }
+            
+            // Update settings with proper operators and options
+            await Settings.findByIdAndUpdate(
+                quiz.settings,
+                { $set: settingsUpdate },
+                { new: true, runValidators: true }
+            );
         }
+        
+        // Return fully populated quiz with updated settings
+        const updatedQuiz = await Quiz.findById(quizId)
+            .populate('creator', 'username')
+            .populate('category', 'name')
+            .populate('settings');
         
         res.json({ 
             message: 'Quiz updated successfully',
-            quiz 
+            quiz: updatedQuiz 
         });
     } catch (err) {
         console.error('Update quiz error:', err);
-        res.status(500).json({ error: 'Failed to update quiz' });
+        res.status(500).json({ error: err.message || 'Failed to update quiz' });
     }
 };
 
+exports.updateQuizSettings = async (req, res) => {
+    try {
+        const { quizId } = req.params;
+        const settingsData = req.body;
+        
+        console.log("Received settings data:", settingsData); // Debug log
+        
+        const quiz = await Quiz.findById(quizId);
+        
+        if (!quiz) {
+            return res.status(404).json({ error: 'Quiz not found' });
+        }
+        
+        if (quiz.creator.toString() !== req.userId.toString()) {
+            return res.status(403).json({ error: 'You can only edit your own quizzes' });
+        }
+        
+        if (!quiz.isDraft) {
+            return res.status(400).json({ error: 'Published quizzes cannot be edited' });
+        }
+        
+        if (!quiz.settings) {
+            return res.status(404).json({ error: 'Settings not found for this quiz' });
+        }
+        
+        const settingsUpdate = {};
+        
+        // Explicitly handle boolean conversions
+        if (settingsData.private !== undefined) {
+            settingsUpdate.private = settingsData.private === true;
+        }
+        
+        if (settingsData.multiplayer !== undefined) {
+            settingsUpdate.multiplayer = settingsData.multiplayer === true;
+        }
+        
+        if (settingsData.default_time_limit !== undefined) {
+            settingsUpdate.default_time_limit = Number(settingsData.default_time_limit);
+        }
+        
+        console.log("Updating settings with:", settingsUpdate); // Debug log
+        
+        const updatedSettings = await Settings.findByIdAndUpdate(
+            quiz.settings,
+            { $set: settingsUpdate },
+            { new: true, runValidators: true }
+        );
+        
+        res.json({
+            message: 'Quiz settings updated successfully',
+            settings: updatedSettings
+        });
+    } catch (err) {
+        console.error('Update settings error:', err);
+        res.status(500).json({ error: 'Failed to update quiz settings' });
+    }
+};
 
 exports.addQuestion = async (req, res) => {
     try {

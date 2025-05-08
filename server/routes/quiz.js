@@ -15,6 +15,7 @@ router.get('/me', quizController.getUserQuizzes);
 router.post('/', quizController.createQuiz);
 router.get('/:quizId', quizController.getQuizById);
 router.put('/:quizId', quizController.updateQuiz);
+router.put('/:quizId/settings', quizController.updateQuizSettings);
 router.delete('/:quizId', quizController.deleteQuiz);
 
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getQuizById, updateQuiz, publishQuiz, addQuestion, removeQuestion, getCategories } from '../services/quiz';
+import { getQuizById, updateQuiz, publishQuiz, addQuestion, removeQuestion, getCategories, updateQuizSettings } from '../services/quiz';
 import Button from '../components/common/Button';
 import QuestionForm from '../components/quiz/QuestionForm';
 import CategorySelector from '../components/common/CategorySelector';
@@ -51,8 +51,8 @@ const QuizEdit = () => {
         // Initialize settings form from quiz data
         if (quiz.settings) {
           setSettingsForm({
-            private: quiz.settings.private || false,
-            multiplayer: quiz.settings.multiplayer || true,
+            private: quiz.settings.private === true, // Explicit comparison
+            multiplayer: quiz.settings.multiplayer === true, // Explicit comparison
             default_time_limit: quiz.settings.default_time_limit || 60,
             categoryIds: [] // Will be populated below
           });
@@ -171,46 +171,43 @@ const QuizEdit = () => {
   // Save quiz settings
   const handleSaveSettings = async () => {
     try {
-      // Prepare the data for submission
-      const updateData = {
-        settings: {
-          private: settingsForm.private,
-          multiplayer: settingsForm.multiplayer,
-          default_time_limit: settingsForm.default_time_limit
-        },
-        categoryIds: settingsForm.categoryIds
+      const settingsData = {
+        private: settingsForm.private,
+        multiplayer: settingsForm.multiplayer,
+        default_time_limit: parseInt(settingsForm.default_time_limit, 10)
       };
       
-      // Update the quiz
-      await updateQuiz(id, updateData);
+      await updateQuizSettings(id, settingsData);
       
-      // Update the quiz object in local state
+      const categoryData = {
+        categoryIds: settingsForm.categoryIds || []
+      };
+      
+      await updateQuiz(id, categoryData);
+      
       const updatedQuiz = {
         ...quiz,
         settings: {
           ...quiz.settings,
           private: settingsForm.private,
           multiplayer: settingsForm.multiplayer,
-          default_time_limit: settingsForm.default_time_limit
+          default_time_limit: parseInt(settingsForm.default_time_limit, 10)
         }
       };
       
-      // Update categories in local state
-      if (categories.length > 0) {
-        const fullCategories = settingsForm.categoryIds.map(id => 
-          categories.find(cat => cat._id === id)
-        ).filter(Boolean);
-        
-        updatedQuiz.category = fullCategories;
-      }
+      const fullCategories = settingsForm.categoryIds.map(id => 
+        categories.find(cat => cat._id === id)
+      ).filter(Boolean);
+      
+      updatedQuiz.category = fullCategories;
       
       setQuiz(updatedQuiz);
       
       setShowSettingsModal(false);
-      toast.success('Quiz updated successfully!');
+      toast.success('Quiz settings updated successfully!');
     } catch (err) {
-      console.error('Failed to update quiz:', err);
-      toast.error(err.response?.data?.error || 'Failed to update quiz. Please try again.');
+      console.error('Failed to update quiz settings:', err);
+      toast.error(err.response?.data?.error || 'Failed to update quiz settings. Please try again.');
     }
   };
   
@@ -405,7 +402,13 @@ const QuizEdit = () => {
                   type="checkbox"
                   name="multiplayer"
                   checked={settingsForm.multiplayer}
-                  onChange={handleSettingsChange}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setSettingsForm(prev => ({
+                      ...prev,
+                      multiplayer: isChecked
+                    }));
+                  }}
                 />
                 Enable Multiplayer Mode
               </label>

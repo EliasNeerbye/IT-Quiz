@@ -49,49 +49,32 @@ export const createQuiz = async (quizData) => {
 };
 
 export const updateQuiz = async (quizId, quizData) => {
-  // Handle the data appropriately based on its type
-  let formData;
-  
   if (quizData instanceof FormData) {
-    // If it's already FormData, use it directly
-    formData = quizData;
-  } else {
-    // Otherwise create a new FormData object
-    formData = new FormData();
-    
-    // Add basic fields if they exist
-    if (quizData.title) formData.append('title', quizData.title);
-    if (quizData.description) formData.append('description', quizData.description);
-    
-    // Handle settings as JSON
-    if (quizData.settings) {
-      formData.append('settings', JSON.stringify(quizData.settings));
-    }
-    
-    // Handle category IDs properly
-    if (quizData.categoryIds && quizData.categoryIds.length > 0) {
-      // Add each category ID separately to avoid double-serialization issues
-      for (const id of quizData.categoryIds) {
-        formData.append('categoryIds', id);
-      }
-    }
-    
-    // Handle image if present
-    if (quizData.image) {
-      formData.append('image', quizData.image);
-    }
+    const response = await api.put(`/quiz/${quizId}`, quizData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } 
+  else {
+    const response = await api.put(`/quiz/${quizId}`, quizData);
+    return response.data;
   }
-  
-  // Make the API request
-  const response = await api.put(`/quiz/${quizId}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  
-  return response.data;
 };
 
+export const updateQuizSettings = async (quizId, settingsData) => {
+  // Explicitly convert boolean values to ensure they're sent correctly
+  const data = {
+    ...settingsData,
+    private: settingsData.private === true,
+    multiplayer: settingsData.multiplayer === true
+  };
+  
+  console.log("Sending settings data:", data); // Debug log
+  const response = await api.put(`/quiz/${quizId}/settings`, data);
+  return response.data;
+};
 
 export const deleteQuiz = async (quizId) => {
   const response = await api.delete(`/quiz/${quizId}`);
