@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { SocketContext } from '../../contexts/SocketContext';
+import { SocketContext } from '../../contexts/socketContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import { joinGame } from '../../services/socket';
 import Button from '../common/Button';

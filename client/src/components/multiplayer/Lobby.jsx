@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { SocketContext } from '../../contexts/SocketContext';
+import { SocketContext } from '../../contexts/socketContext';
 import { leaveGame } from '../../services/socket';
 import Button from '../common/Button';
 import { FaPlay, FaUsers, FaCopy, FaSignOutAlt } from 'react-icons/fa';

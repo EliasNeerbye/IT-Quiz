@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Context Providers
 import { AuthProvider } from './contexts/AuthContext';
-import { SocketProvider } from './contexts/SocketContext';
+import { SocketProvider } from './contexts/socketContext';
 
 // Common Components
 import Header from './components/common/Header';

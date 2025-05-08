@@ -1,10 +1,7 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import { initSocket, disconnectSocket } from '../services/socket';
-import { AuthContext } from './AuthContext';
-
-
-export const SocketContext = createContext();
-
+import { useState, useEffect, useContext } from 'react';
+import { initSocket, disconnectSocket } from '../../services/socket';
+import { AuthContext } from '../AuthContext';
+import SocketContext from './SocketContext';
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -18,10 +15,13 @@ export const SocketProvider = ({ children }) => {
     questionResults: null,
     gameOver: false,
     results: null,
+    inProgress: false,
+    readyToStart: false,
+    hostId: null,
+    quiz: null
   });
   
   const { user } = useContext(AuthContext);
-  
   
   useEffect(() => {
     if (user) {
@@ -34,7 +34,6 @@ export const SocketProvider = ({ children }) => {
       socketInstance.on('disconnect', () => {
         setConnected(false);
       });
-      
       
       socketInstance.on('player_joined', (data) => {
         setGameState(prev => ({
@@ -61,6 +60,7 @@ export const SocketProvider = ({ children }) => {
         setGameState(prev => ({
           ...prev,
           inProgress: true,
+          gameOver: false, // Reset gameOver state explicitly
           currentQuestion: {
             ...data.question,
             number: data.questionNumber,
@@ -106,25 +106,17 @@ export const SocketProvider = ({ children }) => {
           ...prev,
           gameOver: true,
           results: data.results,
-          inProgress: false
+          inProgress: true, // Keep this true to prevent switching to lobby
+          currentQuestion: null,
+          questionResults: null
         }));
       });
       
       socketInstance.on('game_canceled', () => {
-        setGameState({
-          inGame: false,
-          gameCode: null,
-          isHost: false,
-          players: [],
-          currentQuestion: null,
-          questionResults: null,
-          gameOver: false,
-          results: null,
-        });
+        resetGame();
       });
       
       setSocket(socketInstance);
-      
       
       return () => {
         disconnectSocket();
@@ -133,7 +125,6 @@ export const SocketProvider = ({ children }) => {
       };
     }
   }, [user]);
-  
   
   const setUpGame = (gameData, isHost = false) => {
     setGameState({
@@ -147,10 +138,10 @@ export const SocketProvider = ({ children }) => {
       gameOver: false,
       results: null,
       inProgress: false,
-      readyToStart: false
+      readyToStart: false,
+      hostId: isHost ? user?.id : null
     });
   };
-  
   
   const resetGame = () => {
     setGameState({
@@ -162,9 +153,12 @@ export const SocketProvider = ({ children }) => {
       questionResults: null,
       gameOver: false,
       results: null,
+      inProgress: false,
+      readyToStart: false,
+      hostId: null,
+      quiz: null
     });
   };
-  
   
   const value = {
     socket,
@@ -180,3 +174,5 @@ export const SocketProvider = ({ children }) => {
     </SocketContext.Provider>
   );
 };
+
+export default SocketProvider;

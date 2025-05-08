@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { SocketContext } from '../../contexts/SocketContext';
+import { SocketContext } from '../../contexts/socketContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getUserQuizzes } from '../../services/quiz';
 import { createGame, startGame } from '../../services/socket';

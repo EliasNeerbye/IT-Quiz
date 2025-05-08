@@ -1,102 +1,148 @@
-import { useContext, useState, useEffect } from 'react';
-import { SocketContext } from '../../contexts/SocketContext';
+import { useContext, useEffect, useReducer, useRef } from 'react';
+import { SocketContext } from '../../contexts/socketContext';
 import { submitAnswer, leaveGame } from '../../services/socket';
 import Button from '../common/Button';
-import { FaCheck, FaTimes, FaUsers, FaTrophy, FaSignOutAlt } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaUsers, FaTrophy, FaSignOutAlt, FaPlay } from 'react-icons/fa';
+
+// Define reducer function
+const gameStateReducer = (state, action) => {
+  switch (action.type) {
+    case 'QUESTION_LOADED':
+      return {
+        ...state,
+        selectedAnswer: null,
+        answered: false,
+        timeLeft: action.payload.timeLimit
+      };
+    case 'TICK':
+      return {
+        ...state,
+        timeLeft: state.timeLeft - 1
+      };
+    case 'SELECT_ANSWER':
+      return {
+        ...state,
+        selectedAnswer: action.payload
+      };
+    case 'SUBMIT_ANSWER':
+      return {
+        ...state,
+        answered: true
+      };
+    default:
+      return state;
+  }
+};
 
 const MultiplayerGame = () => {
   const { gameState, resetGame } = useContext(SocketContext);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [timer, setTimer] = useState(null);
-  const [answered, setAnswered] = useState(false);
+  const [state, dispatch] = useReducer(gameStateReducer, {
+    selectedAnswer: null,
+    timeLeft: 0,
+    answered: false
+  });
   
+  const timerRef = useRef(null);
+  const stateRef = useRef(state);
   
+  // Update the ref whenever state changes
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+  
+  // Handle the timer effect
   useEffect(() => {
     if (gameState.currentQuestion) {
-      
-      setSelectedAnswer(null);
-      setAnswered(false);
-      
-      
       const timeLimit = gameState.currentQuestion.time_limit || 60;
-      setTimeLeft(timeLimit);
       
+      // Reset state for new question
+      dispatch({ 
+        type: 'QUESTION_LOADED',
+        payload: { timeLimit }
+      });
       
-      if (timer) {
-        clearInterval(timer);
+      // Clear any existing timers
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
       }
       
-      
-      const newTimer = setInterval(() => {
-        setTimeLeft((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(newTimer);
-            
-            if (!answered) {
-              handleSubmitAnswer(null);
+      // Start new timer
+      timerRef.current = setInterval(() => {
+        dispatch({ type: 'TICK' });
+        
+        // Access state via ref to avoid dependency issues
+        const currentState = stateRef.current;
+        
+        // Check if time is up
+        if (currentState.timeLeft <= 1) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+          
+          if (!currentState.answered) {
+            dispatch({ type: 'SUBMIT_ANSWER' });
+            if (gameState.gameCode && gameState.currentQuestion) {
+              submitAnswer(
+                gameState.gameCode,
+                gameState.currentQuestion.id,
+                null
+              );
             }
-            return 0;
           }
-          return prevTime - 1;
-        });
+        }
       }, 1000);
       
-      setTimer(newTimer);
-      
-      
+      // Cleanup function
       return () => {
-        if (timer) {
-          clearInterval(timer);
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
         }
       };
     }
-  }, [gameState.currentQuestion]);
+  }, [gameState.currentQuestion, gameState.gameCode]);
   
-  
+  // Cleanup effect on unmount
   useEffect(() => {
     return () => {
-      if (timer) {
-        clearInterval(timer);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
       }
     };
   }, []);
   
-  
   const handleSelectAnswer = (answerId) => {
-    setSelectedAnswer(answerId);
+    dispatch({ 
+      type: 'SELECT_ANSWER',
+      payload: answerId
+    });
   };
   
-  
-  const handleSubmitAnswer = (answerId) => {
-    
-    const finalAnswerId = answerId !== null ? answerId : selectedAnswer;
-    
-    
-    if (timer) {
-      clearInterval(timer);
+  const handleSubmitAnswer = () => {
+    // Stop timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
     
+    // Mark as answered
+    dispatch({ type: 'SUBMIT_ANSWER' });
     
-    setAnswered(true);
-    
-    
+    // Submit to server
     if (gameState.gameCode && gameState.currentQuestion) {
       submitAnswer(
         gameState.gameCode,
         gameState.currentQuestion.id,
-        finalAnswerId
+        state.selectedAnswer
       );
     }
   };
-  
   
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-  
   
   const handleLeaveGame = () => {
     if (window.confirm('Are you sure you want to leave this game?')) {
@@ -105,8 +151,17 @@ const MultiplayerGame = () => {
     }
   };
   
+  const handlePlayAgain = () => {
+    // Do full reset to ensure clean state
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    resetGame();
+  };
   
-  if (gameState.gameOver) {
+  // Check gameOver first before other conditions
+  if (gameState.gameOver && gameState.results) {
     return (
       <div className="game-results">
         <h2>Game Over</h2>
@@ -121,7 +176,7 @@ const MultiplayerGame = () => {
                   <div className="player-name">{player.username}</div>
                   <div className="player-score">{player.score} pts</div>
                   <div className="player-accuracy">
-                    {player.correctAnswers}/{player.totalAnswers} correct
+                    {player.correctAnswers}/{player.totalAnswers || gameState.quiz?.questionCount || '?'} correct
                   </div>
                 </div>
               ))}
@@ -130,14 +185,13 @@ const MultiplayerGame = () => {
         </div>
         
         <div className="game-actions mt-lg">
-          <Button variant="primary" onClick={resetGame}>
-            Play Another Game
+          <Button variant="primary" onClick={handlePlayAgain}>
+            <FaPlay /> Play Another Game
           </Button>
         </div>
       </div>
     );
   }
-  
   
   if (gameState.questionResults) {
     return (
@@ -173,7 +227,6 @@ const MultiplayerGame = () => {
     );
   }
   
-  
   if (gameState.currentQuestion) {
     return (
       <div className="multiplayer-question">
@@ -182,7 +235,7 @@ const MultiplayerGame = () => {
             Question {gameState.currentQuestion.number} of {gameState.currentQuestion.total}
           </div>
           <div className="question-timer">
-            Time: {formatTime(timeLeft)}
+            Time: {formatTime(state.timeLeft)}
           </div>
         </div>
         
@@ -203,9 +256,9 @@ const MultiplayerGame = () => {
             {gameState.currentQuestion.answers.map((answer) => (
               <button
                 key={answer.id}
-                className={`answer-option ${selectedAnswer === answer.id ? 'selected' : ''} ${answered ? 'disabled' : ''}`}
-                onClick={() => !answered && handleSelectAnswer(answer.id)}
-                disabled={answered}
+                className={`answer-option ${state.selectedAnswer === answer.id ? 'selected' : ''} ${state.answered ? 'disabled' : ''}`}
+                onClick={() => !state.answered && handleSelectAnswer(answer.id)}
+                disabled={state.answered}
               >
                 {answer.text}
               </button>
@@ -215,8 +268,8 @@ const MultiplayerGame = () => {
           <div className="question-actions">
             <Button
               variant="primary"
-              onClick={() => handleSubmitAnswer(selectedAnswer)}
-              disabled={!selectedAnswer || answered}
+              onClick={handleSubmitAnswer}
+              disabled={!state.selectedAnswer || state.answered}
             >
               Submit Answer
             </Button>
@@ -249,7 +302,6 @@ const MultiplayerGame = () => {
       </div>
     );
   }
-  
   
   return (
     <div className="game-loading">
