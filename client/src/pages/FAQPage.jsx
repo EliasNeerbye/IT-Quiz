@@ -42,7 +42,7 @@ const FAQPage = () => {
         <div className="text-center mb-lg">
           <h1>Frequently Asked Questions</h1>
           <p className="lead">
-            Find answers to the most common questions about IT Quiz.
+            Find answers to the most common questions about QuITz.
           </p>
         </div>
         

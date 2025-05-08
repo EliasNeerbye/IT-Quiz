@@ -1,4 +1,4 @@
-# IT Quiz Website Project
+# QuITz Website Project
 
 ## Project Overview
 

@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>IT Quiz</h3>
+            <h3>QuITz</h3>
             <p>
               Create, share, and take quizzes on various IT topics. Test your knowledge
               and challenge your friends in multiplayer mode.
@@ -46,7 +46,7 @@ const Footer = () => {
         </div>
         
         <div className="footer-bottom">
-          <p>&copy; {currentYear} IT Quiz. All rights reserved.</p>
+          <p>&copy; {currentYear} QuITz. All rights reserved.</p>
         </div>
       </div>
     </footer>

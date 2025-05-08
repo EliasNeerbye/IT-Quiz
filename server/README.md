@@ -1,6 +1,6 @@
-# IT Quiz Server
+# QuITz Server
 
-Backend server for the IT Quiz application that provides quiz creation, management, and multiplayer functionality.
+Backend server for the QuITz application that provides quiz creation, management, and multiplayer functionality.
 
 ## Setup
 

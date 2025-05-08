@@ -106,7 +106,7 @@ const Home = () => {
       
       <section className="features">
         <div className="container">
-          <h2>Why Choose IT Quiz?</h2>
+          <h2>Why Choose QuITz?</h2>
           
           <div className="features-grid">
             <div className="feature-card">

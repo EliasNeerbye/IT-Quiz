@@ -13,7 +13,7 @@ const MultiplayerPage = () => {
 
   return (
     <div className="container py-lg">
-      <h1 className="text-center mb-lg">IT Quiz Multiplayer</h1>
+      <h1 className="text-center mb-lg">QuITz Multiplayer</h1>
       
       <div className="multiplayer-options">
         <div className="tabs">
