@@ -20,12 +20,12 @@ const QuizEdit = () => {
   const [settingsForm, setSettingsForm] = useState({
     private: false,
     multiplayer: true,
-    default_time_limit: 60
+    default_time_limit: 60,
+    categoryIds: [] // Added categoryIds to settings form
   });
   const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
 
-  
+  // Utility function to get full image URL
   const getFullImageUrl = (imagePath) => {
     if (!imagePath) return null;
     return imagePath.startsWith('http') 
@@ -33,13 +33,13 @@ const QuizEdit = () => {
       : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imagePath}`;
   };
 
-  
+  // Load quiz and categories
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        
+        // Fetch both quiz and categories in parallel
         const [quizResponse, categoriesResponse] = await Promise.all([
           getQuizById(id),
           getCategories()
@@ -48,23 +48,27 @@ const QuizEdit = () => {
         const quiz = quizResponse.quiz;
         setQuiz(quiz);
         
-        
+        // Initialize settings form from quiz data
         if (quiz.settings) {
           setSettingsForm({
             private: quiz.settings.private || false,
             multiplayer: quiz.settings.multiplayer || true,
-            default_time_limit: quiz.settings.default_time_limit || 60
+            default_time_limit: quiz.settings.default_time_limit || 60,
+            categoryIds: [] // Will be populated below
           });
         }
         
-        
+        // Set available categories
         setCategories(categoriesResponse.categories || []);
         
-        
+        // Extract category IDs from the quiz data
         if (quiz.category && quiz.category.length > 0) {
-          
           const categoryIds = quiz.category.map(cat => cat._id);
-          setSelectedCategories(categoryIds);
+          // Update the settings form with the extracted category IDs
+          setSettingsForm(prev => ({
+            ...prev,
+            categoryIds: categoryIds
+          }));
         }
       } catch (err) {
         console.error('Failed to fetch data:', err);
@@ -77,12 +81,12 @@ const QuizEdit = () => {
     fetchData();
   }, [id]);
   
-  
+  // Handle question submission
   const handleQuestionSubmit = async (questionData) => {
     try {
       const response = await addQuestion(id, questionData);
       
-      
+      // Update quiz state with the new question
       setQuiz({
         ...quiz,
         questions: [...quiz.questions, response.question]
@@ -96,7 +100,7 @@ const QuizEdit = () => {
     }
   };
   
-  
+  // Handle question removal
   const handleRemoveQuestion = async (questionId) => {
     if (!window.confirm('Are you sure you want to remove this question?')) {
       return;
@@ -105,7 +109,7 @@ const QuizEdit = () => {
     try {
       await removeQuestion(id, questionId);
       
-      
+      // Update quiz state by filtering out the removed question
       setQuiz({
         ...quiz,
         questions: quiz.questions.filter(q => q._id !== questionId)
@@ -118,7 +122,7 @@ const QuizEdit = () => {
     }
   };
   
-  
+  // Handle quiz publication
   const handlePublishQuiz = async () => {
     if (quiz.questions.length === 0) {
       toast.error('You need to add at least one question before publishing.');
@@ -132,7 +136,7 @@ const QuizEdit = () => {
     try {
       await publishQuiz(id);
       
-      
+      // Update quiz state to mark as not a draft
       setQuiz({
         ...quiz,
         isDraft: false
@@ -146,7 +150,7 @@ const QuizEdit = () => {
     }
   };
   
-  
+  // Handle settings form changes
   const handleSettingsChange = (e) => {
     const { name, value, type, checked } = e.target;
     
@@ -155,31 +159,45 @@ const QuizEdit = () => {
       [name]: type === 'checkbox' ? checked : value
     });
   };
+
+  // Handle category selection changes
+  const handleCategoryChange = (selectedIds) => {
+    setSettingsForm(prev => ({
+      ...prev,
+      categoryIds: selectedIds
+    }));
+  };
   
-  
+  // Save quiz settings
   const handleSaveSettings = async () => {
     try {
-      
+      // Prepare the data for submission
       const updateData = {
-        settings: settingsForm,
-        categoryIds: selectedCategories
+        settings: {
+          private: settingsForm.private,
+          multiplayer: settingsForm.multiplayer,
+          default_time_limit: settingsForm.default_time_limit
+        },
+        categoryIds: settingsForm.categoryIds
       };
       
+      // Update the quiz
       await updateQuiz(id, updateData);
       
-      
+      // Update the quiz object in local state
       const updatedQuiz = {
         ...quiz,
         settings: {
           ...quiz.settings,
-          ...settingsForm
+          private: settingsForm.private,
+          multiplayer: settingsForm.multiplayer,
+          default_time_limit: settingsForm.default_time_limit
         }
       };
       
-      
+      // Update categories in local state
       if (categories.length > 0) {
-        
-        const fullCategories = selectedCategories.map(id => 
+        const fullCategories = settingsForm.categoryIds.map(id => 
           categories.find(cat => cat._id === id)
         ).filter(Boolean);
         
@@ -228,7 +246,7 @@ const QuizEdit = () => {
     );
   }
   
-  
+  // Check if quiz is published
   if (!quiz.isDraft) {
     return (
       <div className="container py-lg">
@@ -349,7 +367,7 @@ const QuizEdit = () => {
         )}
       </div>
       
-      {}
+      {/* Question form modal */}
       {showQuestionForm && (
         <Modal
           title="Add Question"
@@ -362,7 +380,7 @@ const QuizEdit = () => {
         </Modal>
       )}
       
-      {}
+      {/* Settings modal */}
       {showSettingsModal && (
         <Modal
           title="Quiz Settings"
@@ -410,8 +428,8 @@ const QuizEdit = () => {
               <label>Categories</label>
               <CategorySelector 
                 categories={categories} 
-                selectedIds={selectedCategories} 
-                onChange={(selectedIds) => setSelectedCategories(selectedIds)} 
+                selectedIds={settingsForm.categoryIds} 
+                onChange={handleCategoryChange} 
               />
             </div>
             

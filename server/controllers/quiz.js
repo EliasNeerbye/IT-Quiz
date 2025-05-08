@@ -71,17 +71,20 @@ exports.getQuizById = async (req, res) => {
     }
 };
 
-
 exports.createQuiz = async (req, res) => {
     try {
-        const { title, description, categoryIds } = req.body;
+        const { title, description } = req.body;
         let imagePath = null;
+        
+        // Debug logging to see exact format received
+        console.log("Request body:", req.body);
+        console.log("Category IDs received:", req.body.categoryIds);
         
         if (!title || !description) {
             return res.status(400).json({ error: 'Title and description are required' });
         }
         
-        
+        // Handle image upload
         if (req.files && req.files.image) {
             try {
                 imagePath = await fileUtils.handleImageUpload(req.files.image, 'quiz_');
@@ -90,7 +93,37 @@ exports.createQuiz = async (req, res) => {
             }
         }
         
+        // Parse category IDs with extra care
+        let categoryIds = [];
         
+        if (req.body.categoryIds) {
+            // If it's already an array, use it
+            if (Array.isArray(req.body.categoryIds)) {
+                categoryIds = req.body.categoryIds;
+            } 
+            // If it's a single ID
+            else if (typeof req.body.categoryIds === 'string') {
+                // Check if it's a stringified array
+                if (req.body.categoryIds.startsWith('[') && req.body.categoryIds.endsWith(']')) {
+                    try {
+                        const parsed = JSON.parse(req.body.categoryIds);
+                        if (Array.isArray(parsed)) {
+                            categoryIds = parsed;
+                        } else {
+                            categoryIds = [req.body.categoryIds];
+                        }
+                    } catch (e) {
+                        // If parsing fails, use as is
+                        categoryIds = [req.body.categoryIds];
+                    }
+                } else {
+                    // Not a stringified array, use as is
+                    categoryIds = [req.body.categoryIds];
+                }
+            }
+        }
+        
+        // Create settings
         const settings = new Settings({
             private: false,
             multiplayer: true,
@@ -99,7 +132,7 @@ exports.createQuiz = async (req, res) => {
         
         await settings.save();
         
-        
+        // Create quiz with clean category IDs
         const quiz = new Quiz({
             title,
             description,
@@ -107,13 +140,13 @@ exports.createQuiz = async (req, res) => {
             isDraft: true,
             settings: settings._id,
             creator: req.userId,
-            category: categoryIds || [],
+            category: categoryIds,
             questions: []
         });
         
         await quiz.save();
         
-        
+        // Update user's quizzes
         await User.findByIdAndUpdate(req.userId, {
             $push: { quizzes: quiz._id }
         });
@@ -124,10 +157,9 @@ exports.createQuiz = async (req, res) => {
         });
     } catch (err) {
         console.error('Create quiz error:', err);
-        res.status(500).json({ error: 'Failed to create quiz' });
+        res.status(500).json({ error: err.message || 'Failed to create quiz' });
     }
 };
-
 
 exports.updateQuiz = async (req, res) => {
     try {

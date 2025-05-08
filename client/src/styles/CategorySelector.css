@@ -1,13 +1,20 @@
 .category-selector {
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .category-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-  }
+  margin-bottom: var(--spacing-md);
+}
+
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.chip-selected-indicator {
+  margin-left: var(--spacing-xs);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+}
   
   .category-chip {
     display: flex;
@@ -31,11 +38,6 @@
     border-color: var(--primary);
     color: var(--primary);
     font-weight: var(--font-weight-medium);
-  }
-  
-  .chip-selected-indicator {
-    margin-left: var(--spacing-xs);
-    font-weight: var(--font-weight-bold);
   }
   
   .selected-categories {

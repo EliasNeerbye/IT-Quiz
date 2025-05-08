@@ -13,14 +13,12 @@ const QuizCreate = () => {
     categoryIds: [],
     image: null
   });
-  const [selectedCategories, setSelectedCategories] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
   const navigate = useNavigate();
-  
   
   useEffect(() => {
     const fetchCategories = async () => {
@@ -44,16 +42,21 @@ const QuizCreate = () => {
     });
   };
   
+  const handleCategoryChange = (selectedIds) => {
+    setFormData(prev => ({
+      ...prev,
+      categoryIds: selectedIds
+    }));
+  };
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     
     if (file) {
-      
       setFormData({
         ...formData,
         image: file
       });
-      
       
       const fileReader = new FileReader();
       fileReader.onload = () => {
@@ -73,7 +76,6 @@ const QuizCreate = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     
     if (!formData.title.trim() || !formData.description.trim()) {
       setError('Title and description are required');
@@ -136,10 +138,9 @@ const QuizCreate = () => {
             <label htmlFor="categoryIds">Categories</label>
             <CategorySelector
               categories={categories}
-              selectedCategories={selectedCategories}
-              setSelectedCategories={setSelectedCategories}
+              selectedIds={formData.categoryIds}
+              onChange={handleCategoryChange}
             />
-            <small className="text-muted">Hold Ctrl/Cmd to select multiple categories</small>
           </div>
           
           <div className="form-group">

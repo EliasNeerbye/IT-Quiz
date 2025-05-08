@@ -7,13 +7,10 @@ const CategorySelector = ({ categories, selectedIds = [], onChange }) => {
     let newSelected;
     
     if (selectedIds.includes(categoryId)) {
-      
       newSelected = selectedIds.filter(id => id !== categoryId);
     } else {
-      
       newSelected = [...selectedIds, categoryId];
     }
-    
     
     if (onChange) {
       onChange(newSelected);

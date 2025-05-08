@@ -18,21 +18,23 @@ export const getQuizById = async (quizId) => {
   return response.data;
 };
 
-
 export const createQuiz = async (quizData) => {
+  // We'll handle FormData construction here to ensure consistency
   const formData = new FormData();
   
-  
+  // Add basic text fields
   formData.append('title', quizData.title);
   formData.append('description', quizData.description);
   
-  
+  // Handle categories - ensure they're sent as individual strings
   if (quizData.categoryIds && quizData.categoryIds.length > 0) {
-    
-    formData.append('categoryIds', JSON.stringify(quizData.categoryIds));
+    // Clear out any previous categoryIds values
+    for (let i = 0; i < quizData.categoryIds.length; i++) {
+      formData.append('categoryIds', quizData.categoryIds[i]);
+    }
   }
   
-  
+  // Handle image if present
   if (quizData.image) {
     formData.append('image', quizData.image);
   }
@@ -46,30 +48,41 @@ export const createQuiz = async (quizData) => {
   return response.data;
 };
 
-
 export const updateQuiz = async (quizId, quizData) => {
-  const formData = new FormData();
+  // Handle the data appropriately based on its type
+  let formData;
   
-  
-  if (quizData.title) formData.append('title', quizData.title);
-  if (quizData.description) formData.append('description', quizData.description);
-  
-  
-  if (quizData.categoryIds && quizData.categoryIds.length > 0) {
+  if (quizData instanceof FormData) {
+    // If it's already FormData, use it directly
+    formData = quizData;
+  } else {
+    // Otherwise create a new FormData object
+    formData = new FormData();
     
-    formData.append('categoryIds', JSON.stringify(quizData.categoryIds));
+    // Add basic fields if they exist
+    if (quizData.title) formData.append('title', quizData.title);
+    if (quizData.description) formData.append('description', quizData.description);
+    
+    // Handle settings as JSON
+    if (quizData.settings) {
+      formData.append('settings', JSON.stringify(quizData.settings));
+    }
+    
+    // Handle category IDs properly
+    if (quizData.categoryIds && quizData.categoryIds.length > 0) {
+      // Add each category ID separately to avoid double-serialization issues
+      for (const id of quizData.categoryIds) {
+        formData.append('categoryIds', id);
+      }
+    }
+    
+    // Handle image if present
+    if (quizData.image) {
+      formData.append('image', quizData.image);
+    }
   }
   
-  
-  if (quizData.settings) {
-    formData.append('settings', JSON.stringify(quizData.settings));
-  }
-  
-  
-  if (quizData.image) {
-    formData.append('image', quizData.image);
-  }
-  
+  // Make the API request
   const response = await api.put(`/quiz/${quizId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',

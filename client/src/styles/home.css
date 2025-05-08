@@ -43,6 +43,7 @@
   .hero-buttons {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: var(--spacing-md);
     margin-top: var(--spacing-lg);
   }
@@ -71,6 +72,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--spacing-lg);
+    width: 100%;
+    margin-top: var(--spacing-lg);
   }
   
   
@@ -268,7 +271,12 @@
   .checkbox-label input[type="checkbox"] {
     width: auto;
   }
-  
+  @media (min-width: 992px) {
+    .quiz-grid {
+      grid-template-columns: repeat(3, 1fr);
+      width: 100%;
+    }
+  }
   
   @media (max-width: 768px) {
     .hero-buttons {
@@ -278,5 +286,8 @@
     
     .feature-card {
       padding: var(--spacing-md);
+    }
+    .quiz-grid {
+      grid-template-columns: 1fr;
     }
   }
