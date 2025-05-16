@@ -185,12 +185,6 @@ node index.js
   }
   ```
 
-#### Get Quiz Leaderboard
-
-- **GET** `/api/quiz/:quizId/leaderboard`
-- Returns quiz attempt rankings
-- **Auth Required**: Yes
-
 #### Get Categories
 
 - **GET** `/api/quiz/categories`

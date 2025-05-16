@@ -190,11 +190,6 @@ const QuizPlay = () => {
   };
   
   
-  const viewLeaderboard = () => {
-    navigate(`/quizzes/${id}/leaderboard`);
-  };
-  
-  
   const retryQuiz = () => {
     setQuizStarted(false);
     setQuizFinished(false);
@@ -379,9 +374,6 @@ const QuizPlay = () => {
           </div>
           
           <div className="results-actions mt-lg">
-            <Button variant="primary" onClick={viewLeaderboard}>
-              <FaTrophy /> View Leaderboard
-            </Button>
             <Button variant="secondary" onClick={retryQuiz}>
               Try Again
             </Button>

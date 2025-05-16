@@ -383,62 +383,6 @@
 }
 
 
-.leaderboard-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
-}
-
-.leaderboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.leaderboard-table-container {
-  overflow-x: auto;
-}
-
-.leaderboard-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: var(--spacing-md);
-}
-
-.leaderboard-table th,
-.leaderboard-table td {
-  padding: var(--spacing-md);
-  text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.leaderboard-table th {
-  font-weight: var(--font-weight-bold);
-  background-color: var(--secondary);
-  color: white;
-}
-
-.leaderboard-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.leaderboard-table tr:hover {
-  background-color: rgba(255, 103, 0, 0.05);
-}
-
-.leaderboard-table .top-1 {
-  background-color: rgba(255, 215, 0, 0.2);
-}
-
-.leaderboard-table .top-2 {
-  background-color: rgba(192, 192, 192, 0.2);
-}
-
-.leaderboard-table .top-3 {
-  background-color: rgba(205, 127, 50, 0.2);
-}
-
 .gold-medal {
   color: gold;
 }
@@ -488,11 +432,5 @@
   
   .results-actions {
     flex-direction: column;
-  }
-  
-  .leaderboard-table th,
-  .leaderboard-table td {
-    padding: var(--spacing-sm);
-    font-size: var(--font-size-sm);
   }
 }

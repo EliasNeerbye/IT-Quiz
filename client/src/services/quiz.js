@@ -131,13 +131,6 @@ export const submitQuizAttempt = async (quizId, scoreData) => {
   return response.data;
 };
 
-
-export const getQuizLeaderboard = async (quizId) => {
-  const response = await api.get(`/quiz/${quizId}/leaderboard`);
-  return response.data;
-};
-
-
 export const getCategories = async () => {
   const response = await api.get('/quiz/categories');
   return response.data;

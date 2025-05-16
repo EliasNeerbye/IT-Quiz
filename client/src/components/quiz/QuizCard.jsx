@@ -72,12 +72,6 @@ const QuizCard = ({ quiz, onDelete, showActions = true }) => {
             </Link>
           )}
           
-          {!quiz.isDraft && (
-            <Link to={`/quizzes/${quiz._id}/leaderboard`} className="btn btn-secondary btn-sm">
-              <FaTrophy /> Leaderboard
-            </Link>
-          )}
-          
           {onDelete && (
             <Button
               variant="danger"

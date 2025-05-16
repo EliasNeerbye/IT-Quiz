@@ -27,7 +27,6 @@ router.post('/:quizId/publish', quizController.publishQuiz);
 
 
 router.post('/:quizId/attempt', quizController.submitQuizAttempt);
-router.get('/:quizId/leaderboard', quizController.getQuizLeaderboard);
 
 
 router.post('/categories', quizController.createCategory);

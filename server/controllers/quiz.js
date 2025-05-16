@@ -567,32 +567,6 @@ exports.submitQuizAttempt = async (req, res) => {
 };
 
 
-exports.getQuizLeaderboard = async (req, res) => {
-    try {
-        const { quizId } = req.params;
-        
-        const quiz = await Quiz.findById(quizId);
-        if (!quiz) {
-            return res.status(404).json({ error: 'Quiz not found' });
-        }
-        
-        
-        const attempts = await QuizAttempt.find({ quiz: quizId })
-            .populate('user', 'username');
-        
-        
-        attempts.sort((a, b) => b.score.points - a.score.points);
-        
-        res.json({
-            leaderboard: attempts
-        });
-    } catch (err) {
-        console.error('Get leaderboard error:', err);
-        res.status(500).json({ error: 'Failed to retrieve leaderboard' });
-    }
-};
-
-
 exports.getCategories = async (req, res) => {
     try {
         const categories = await Category.find();
